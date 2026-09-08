@@ -1,0 +1,27 @@
+{
+  "remVersion": "1.0",
+  "workRoots": [
+    "docs/rem/decisions",
+    "docs/rem/architecture",
+    "docs/rem/incidents",
+    "docs/rem/audits",
+    "docs/rem/implementations",
+    "docs/rem/megaplanes"
+  ],
+  "planStates": [
+    "Pendiente",
+    "Activo",
+    "Verificando",
+    "Desplegado",
+    "Observando",
+    "Pausado",
+    "Cerrado",
+    "Abandonado"
+  ],
+  "wip": {
+    "maxActiveOrVerifyingPerOwner": 1
+  },
+  "limits": {
+    "decisionNoteContentLines": 40
+  }
+}

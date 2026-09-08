@@ -1,0 +1,26 @@
+name: REM doctor
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  rem:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validate REM invariants
+        run: node scripts/rem-doctor.mjs
+      - name: Flow summary
+        if: always()
+        run: node scripts/rem-flow.mjs
