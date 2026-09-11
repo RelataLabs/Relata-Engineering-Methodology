@@ -1,0 +1,25 @@
+Relata Engineering Methodology (REM)
+Copyright 2026 RelataLabs
+
+Official project:
+https://github.com/RelataLabs/Relata-Engineering-Methodology
+
+Licensing summary:
+
+- REM specification, documentation, and templates are licensed under
+  Creative Commons Attribution 4.0 International (CC BY 4.0).
+- REM software and executable tooling are licensed under the
+  Apache License, Version 2.0.
+
+See LICENSE for scope and the corresponding full license texts in:
+
+- LICENSE-CC-BY-4.0
+- LICENSE-APACHE-2.0
+
+A reasonable attribution for specification/documentation reuse is:
+
+  Based on Relata Engineering Methodology (REM) 1.0 by RelataLabs,
+  licensed under CC BY 4.0.
+
+RelataLabs branding and official REM branding are not licensed by these
+copyright licenses. See TRADEMARKS.md.
