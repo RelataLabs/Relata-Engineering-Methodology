@@ -94,8 +94,15 @@ Cuando haya espacio para mayor precisión:
 
 ## 5. Estado de publicación
 
-REM 1.0 se publica como **especificación pública versionada**.
+REM 1.0 se publica como **open specification versionada**.
 
-La publicación pública del repositorio no debe confundirse con una declaración de licencia de código abierto. Mientras el repositorio no incluya un archivo `LICENSE` explícito, la especificación debe describirse como **public specification** y no como **open source specification**.
+La apertura se expresa mediante licencias explícitas según el tipo de material:
 
-La elección de licencia es una decisión independiente de la clasificación metodológica y debe realizarse explícitamente por sus titulares.
+- la especificación, documentación y plantillas se publican bajo **Creative Commons Attribution 4.0 International (CC BY 4.0)**;
+- el software y tooling ejecutable se publican bajo **Apache License 2.0**.
+
+El archivo raíz `LICENSE` define el alcance por ruta; los textos completos están en `LICENSE-CC-BY-4.0` y `LICENSE-APACHE-2.0`.
+
+Esta apertura permite reutilización, adaptación y uso comercial bajo las condiciones de cada licencia. No concede por sí sola derechos sobre branding ni autorización para presentar una variante modificada como publicación oficial de RelataLabs; esas reglas se aclaran en `TRADEMARKS.md`.
+
+Por tanto, REM puede describirse como **open specification** y su tooling como **open-source software** bajo Apache-2.0.
