@@ -2,6 +2,8 @@
 
 **REM 1.0** es un método de ingeniería de software diseñado para equipos pequeños y medianos que trabajan con agentes de IA como parte normal del desarrollo.
 
+Su clasificación técnica es **framework configurable de proceso de ingeniería de software y especificación de método** (*configurable software engineering process framework and method specification*). `Relata Engineering Methodology` es el nombre paraguas del proyecto; la distinción formal entre metodología, método, framework y proceso configurado está documentada en [docs/CLASSIFICATION.md](docs/CLASSIFICATION.md).
+
 No es Scrum sin ceremonias, ni RUP reducido, ni Jira en Markdown. REM parte de una premisa distinta:
 
 > **Generar código se ha abaratado; entender el problema, decidir bien, verificar y asumir responsabilidad siguen siendo escasos.**
@@ -74,6 +76,7 @@ AGENTS.md                 contrato de ejecución para agentes
 REFERENCES.md             influencias y fundamentos
 
 docs/
+  CLASSIFICATION.md       clasificación formal: methodology / method / process framework
   FLOW.md                 selección, estados y WIP
   VERIFICATION.md         niveles de evidencia
   METRICS.md              métricas de flujo y outcome
@@ -138,5 +141,8 @@ entrega relevante que necesita evidencia durable
 - **Estado:** Stable
 - **Fecha:** 2026-09-08
 - **Idioma normativo:** español
+- **Clasificación:** configurable software engineering process framework + method specification
+- **Publicación:** especificación pública versionada
+- **Licencia de reutilización:** pendiente de definición explícita
 
-La especificación normativa está en [METHOD.md](METHOD.md).
+La especificación normativa está en [METHOD.md](METHOD.md). La clasificación formal está en [docs/CLASSIFICATION.md](docs/CLASSIFICATION.md).
