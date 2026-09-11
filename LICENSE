@@ -1,0 +1,50 @@
+Relata Engineering Methodology (REM) — Licensing
+
+Copyright 2026 RelataLabs
+
+This repository uses two licenses depending on the kind of material.
+
+1. Specification, documentation, and templates — CC BY 4.0
+
+The following material is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0), unless a file states otherwise:
+
+- METHOD.md
+- README.md
+- CONSTITUTION.md
+- AGENTS.md
+- REFERENCES.md
+- CHANGELOG.md
+- docs/**
+- templates/**
+
+You may share and adapt this material, including for commercial use, provided that you give appropriate attribution, provide a link to the license, and indicate whether changes were made.
+
+Full license text: LICENSE-CC-BY-4.0
+Canonical license: https://creativecommons.org/licenses/by/4.0/
+SPDX identifier: CC-BY-4.0
+
+2. Software and executable tooling — Apache License 2.0
+
+The following material is licensed under the Apache License, Version 2.0, unless a file states otherwise:
+
+- scripts/**
+- .github/workflows/**
+- rem.config.example.json
+- future executable REM tooling explicitly marked Apache-2.0
+
+Full license text: LICENSE-APACHE-2.0
+Canonical license: https://www.apache.org/licenses/LICENSE-2.0
+SPDX identifier: Apache-2.0
+
+3. Trademarks and branding
+
+These licenses do not grant rights to the RelataLabs name, logo, branding, or to represent a modified work as an official RelataLabs publication. See TRADEMARKS.md.
+
+4. Attribution
+
+For REM specification/documentation reuse, a reasonable attribution is:
+
+  Based on Relata Engineering Methodology (REM) 1.0 by RelataLabs,
+  licensed under CC BY 4.0.
+
+For Apache-2.0 software redistribution, retain the notices required by the Apache License and NOTICE file.
