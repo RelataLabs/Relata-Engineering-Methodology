@@ -74,6 +74,9 @@ METHOD.md                 norma del método
 CONSTITUTION.md           plantilla de reglas técnicas del proyecto
 AGENTS.md                 contrato de ejecución para agentes
 REFERENCES.md             influencias y fundamentos
+LICENSE                    mapa de licencias y alcance
+NOTICE                     atribución del proyecto
+TRADEMARKS.md              política de nombres y branding
 
 docs/
   CLASSIFICATION.md       clasificación formal: methodology / method / process framework
@@ -135,6 +138,21 @@ entrega relevante que necesita evidencia durable
   → IMP
 ```
 
+## Licencias
+
+REM se publica con un modelo de licencia dual según el tipo de material:
+
+- **Especificación, documentación y plantillas:** [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE-CC-BY-4.0).
+- **Software y tooling ejecutable:** [Apache License 2.0](LICENSE-APACHE-2.0).
+
+El alcance exacto por ruta está definido en [LICENSE](LICENSE) y la atribución del proyecto en [NOTICE](NOTICE).
+
+Esto permite usar, enseñar, adaptar y redistribuir REM —también en contextos comerciales— manteniendo atribución y trazabilidad de modificaciones. Los nombres, logos y branding oficial de RelataLabs/REM no quedan licenciados por esas licencias; consulta [TRADEMARKS.md](TRADEMARKS.md).
+
+Atribución sugerida para documentación o adaptaciones:
+
+> Based on Relata Engineering Methodology (REM) 1.0 by RelataLabs, licensed under CC BY 4.0.
+
 ## Estado de esta especificación
 
 - **Versión:** 1.0.0
@@ -142,7 +160,8 @@ entrega relevante que necesita evidencia durable
 - **Fecha:** 2026-09-08
 - **Idioma normativo:** español
 - **Clasificación:** configurable software engineering process framework + method specification
-- **Publicación:** especificación pública versionada
-- **Licencia de reutilización:** pendiente de definición explícita
+- **Publicación:** open specification versionada
+- **Documentación:** CC BY 4.0
+- **Tooling:** Apache-2.0
 
 La especificación normativa está en [METHOD.md](METHOD.md). La clasificación formal está en [docs/CLASSIFICATION.md](docs/CLASSIFICATION.md).
