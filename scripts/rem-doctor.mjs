@@ -527,15 +527,42 @@ for (const d of plans) {
     ['contraseña literal', /\b(?:password|passwd|pwd|contrase(?:ñ|n)a)\b\s*[:=]\s*[`'"]?(?![<$({*])[^\s`'"|]{6,}/i],
     ...config.secrets.extraPatterns.map((p) => [p.label ?? 'patrón del config', new RegExp(p.regex, p.flags ?? '')]),
   ]
+  // Una contraseña en una tabla no tiene "password:" delante: está en la columna cuyo
+  // encabezado lo dice. Así se publicaron las credenciales del primer adoptante de REM 1.1, y
+  // ningún patrón de línea las habría visto.
+  const PASSWORD_HEADER = /^(contrase(ñ|n)as?|passwords?|passwd)$/i
+  const isPlaceholder = (v) =>
+    !v || v.length < 6 || /\s/.test(v) || /^[<({[*…—–-]/.test(v) || /^(n\/?a|null|none|vac[ií]o|x+)$/i.test(v) ||
+    /^[A-Z][A-Z0-9_]+$/.test(v) || v.includes('/')
+  const cells = (line) => line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim().replace(/^`+|`+$/g, ''))
   for (const path of walkText(ROOT, config.secrets.exclude)) {
     const rel = toPosix(relative(ROOT, path))
     // El propio doctor y sus pruebas contienen los patrones como texto.
     if (/(^|\/)scripts\/rem-doctor\.mjs$|(^|\/)tests\//.test(rel)) continue
-    readFileSync(path, 'utf8').split(/\r?\n/).forEach((line, i) => {
+    const lines = readFileSync(path, 'utf8').split(/\r?\n/)
+    let passwordCols = null
+    lines.forEach((line, i) => {
       if (line.includes('rem-secrets: ignore')) return
       const hit = patterns.find(([, re]) => re.test(line))
       if (hit) {
         add(21, 'error', `${rel}:${i + 1}: parece ${hit[0]}`,
+          'los secretos viven solo en el entorno; si es un falso positivo, añade `rem-secrets: ignore` en la línea')
+        return
+      }
+      if (!line.trim().startsWith('|')) {
+        passwordCols = null
+        return
+      }
+      if (/^\|?[\s:|-]+\|?$/.test(line.trim()) && line.includes('-')) return
+      const row = cells(line)
+      const next = lines[i + 1]?.trim() ?? ''
+      if (/^\|?[\s:|-]+\|?$/.test(next) && next.includes('-')) {
+        const cols = row.map((c, j) => (PASSWORD_HEADER.test(c) ? j : -1)).filter((j) => j >= 0)
+        passwordCols = cols.length ? cols : null
+        return
+      }
+      if (passwordCols && passwordCols.some((j) => !isPlaceholder(row[j]))) {
+        add(21, 'error', `${rel}:${i + 1}: parece una contraseña en una columna de tabla`,
           'los secretos viven solo en el entorno; si es un falso positivo, añade `rem-secrets: ignore` en la línea')
       }
     })

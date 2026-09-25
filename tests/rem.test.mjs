@@ -127,6 +127,15 @@ describe('doctor: reglas de 1.1', () => {
     assert.equal(r.code, 1)
     assert.match(r.out, /\[regla 21\]/)
   })
+  test('contraseña en una columna de tabla (21), sin marcar nombres de variables ni marcadores', () => {
+    const leak = '# Cuentas\n\n| Interfaz | Correo | Contraseña |\n|---|---|---|\n| App | `owner@x.dev` | `Clave2026!` |\n'
+    const r1 = run('rem-doctor.mjs', hub({ 'docs/guia.md': leak }), '--no-git')
+    assert.equal(r1.code, 1)
+    assert.match(r1.out, /\[regla 21\].*columna de tabla/)
+    const fine = '# Cuentas\n\n| Interfaz | Contraseña |\n|---|---|\n| App | `APP_OWNER_PASSWORD` |\n| CRM | <en el gestor de secretos> |\n| API | — |\n'
+    const r2 = run('rem-doctor.mjs', hub({ 'docs/guia.md': fine }), '--no-git')
+    assert.doesNotMatch(r2.out, /\[regla 21\]/, r2.out)
+  })
   test('el marcador rem-secrets: ignore silencia un falso positivo', () => {
     const r = run('rem-doctor.mjs', hub({ 'docs/guia.md': '# Guía\n\npassword: hunter22x <!-- rem-secrets: ignore -->\n' }), '--no-git')
     assert.doesNotMatch(r.out, /\[regla 21\]/)
