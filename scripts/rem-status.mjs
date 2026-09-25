@@ -87,7 +87,8 @@ function planLine(p, indent = '  ') {
   const tail = []
   if (ACTIVE_STATES.has(p.fm.status) && age !== null) tail.push(`${age}d`)
   if (blocked.length) tail.push(`espera ${blocked.join(', ')}`)
-  if (asList(p.fm.touches).length) tail.push(`toca ${asList(p.fm.touches).join(', ')}`)
+  const zones = asList(p.fm.touches)
+  if (zones.length) tail.push(`toca ${zones.slice(0, 3).join(', ')}${zones.length > 3 ? ` +${zones.length - 3}` : ''}`)
   const out = [`${indent}${bits.join(' ')}${tail.length ? `  [${tail.join(' · ')}]` : ''}`]
   for (const c of commitsByPlan.get(p.fm.id) ?? []) out.push(`${indent}    ${c}`)
   return out.join('\n')
