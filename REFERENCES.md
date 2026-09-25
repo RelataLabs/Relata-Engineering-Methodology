@@ -1,4 +1,4 @@
-# Fundamentos e influencias de REM 1.0
+# Fundamentos e influencias de REM
 
 REM no pretende inventar de cero cada idea. Combina patrones que funcionan bien y los adapta al desarrollo con agentes.
 

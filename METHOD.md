@@ -1,7 +1,7 @@
-# Relata Engineering Method — REM 1.0
+# Relata Engineering Method — REM 1.1
 
-**Versión:** 1.0.0  
-**Fecha:** 2026-09-08  
+**Versión:** 1.1.0  
+**Fecha:** 2026-09-25  
 **Estado:** Stable
 
 Las palabras **DEBE**, **NO DEBE**, **DEBERÍA**, **PUEDE** y **RECOMENDADO** expresan fuerza normativa.
@@ -39,7 +39,7 @@ Un uso conforme de REM DEBE conservar estas propiedades:
 9. **Métricas de flujo:** como mínimo se puede conocer WIP, throughput, edad del trabajo y cycle time.
 10. **Evolución del método:** las reglas de REM adoptadas por un equipo pueden revisarse a partir de evidencia.
 
-Si una adopción elimina alguna de estas propiedades, puede inspirarse en REM, pero no DEBERÍA llamarse una implementación completa de REM 1.0.
+Si una adopción elimina alguna de estas propiedades, puede inspirarse en REM, pero no DEBERÍA llamarse una implementación completa de REM 1.x.
 
 ---
 
@@ -124,7 +124,7 @@ La formalización comienza cuando se decide invertir atención.
 
 Una adopción DEBE tener una política de selección explícita.
 
-Orden de referencia de REM 1.0:
+Orden de referencia de REM:
 
 1. seguridad, integridad de datos, disponibilidad o incidente activo;
 2. trabajo que desbloquea trabajo ya activo;
@@ -187,18 +187,22 @@ Una vez `Accepted`, NO DEBERÍA editarse para fingir que el pasado fue distinto.
 
 ### 5.4 Megaplán
 
-Se abre cuando:
+Un Megaplán DEBE abrirse cuando:
 
-- hay varios objetivos que se quieren completar juntos; y
-- existe al menos una dependencia, incertidumbre material o probabilidad razonable de ramificación.
+- hay dos o más objetivos que se quieren completar juntos; y
+- existe al menos una dependencia entre ellos, una incertidumbre material o una probabilidad razonable de ramificación.
 
-Un objetivo simple y corto NO DEBERÍA convertirse en Megaplán.
+No abrirlo no ahorra trabajo: lo esconde en notas sueltas que ninguna herramienta comprueba.
+
+Un objetivo simple y corto NO DEBERÍA convertirse en Megaplán. Guía de uso: `docs/MEGAPLANS.md`.
 
 ### 5.5 Plan
 
 Un Plan representa **un objetivo específico**.
 
 Si contiene dos objetivos que pueden cerrarse independientemente, DEBERÍA dividirse.
+
+Un Plan PUEDE vivir dentro de un Megaplán (`MEGA-YYYY-NNN-PN`, con `megaplan`) o suelto (`PLAN-YYYY-NNN`, `megaplan: null`) cuando es un único objetivo por delante que no cabe en un commit. Un Plan suelto que descubre una dependencia con otro trabajo pasa a un Megaplán.
 
 ---
 
@@ -257,7 +261,7 @@ El recurso escaso en desarrollo AI-native es la atención humana capaz de compre
 
 ### 7.1 Regla por defecto
 
-REM 1.0 establece como default:
+REM establece como default:
 
 > **Máximo un Plan `Activo` o `Verificando` por humano responsable.**
 
@@ -292,6 +296,19 @@ Si durante un Plan aparece trabajo no previsto:
 2. si bloquea un hito pero es una misión secundaria acotada, se registra como ramificación;
 3. si adquiere objetivo y cierre propios, se convierte en Plan separado;
 4. si no bloquea el objetivo actual, NO DEBE colarse silenciosamente: se registra o se deja fuera.
+
+### 7.5 Varios humanos en un Megaplán
+
+Cuando varias personas, cada una con sus agentes, avanzan el mismo Megaplán:
+
+- cada Megaplán DEBE tener un **coordinador** humano (su `owner`), único que edita el documento maestro;
+- cada Plan DEBE tener **un** responsable; solo él y sus agentes editan ese Plan. Si un objetivo necesita dos personas, son dos Plans;
+- las vistas que resumen varios documentos (índice, tabla de planes del maestro) NO DEBEN mantenerse a mano: se generan desde el front-matter y tienen un único escritor;
+- tomar un Plan DEBE ser un cambio pequeño y publicado de inmediato (responsable + estado), para que dos personas no tomen el mismo;
+- cada Plan DEBERÍA declarar su zona de cambio y su contrato de entrega, y cambiar un contrato publicado DEBERÍA registrarse como DEC enlazada a los Plans que lo consumen;
+- el límite de WIP sigue siendo por humano.
+
+El protocolo completo está en `docs/TEAM.md`.
 
 ---
 
@@ -428,9 +445,11 @@ REM no prescribe una política universal sobre trailers o atribución a herramie
 
 ### 11.2 Changelog
 
-Un cambio observable para usuarios DEBERÍA producir una entrada de changelog en lenguaje de usuario.
+La Constitución DEBE declarar la política de changelog del proyecto: `required`, `observable` o `deferred`.
 
-Un cambio puramente interno no necesita una entrada si el commit y la evidencia ya lo explican adecuadamente.
+El default de REM es `required`: todo commit que cambia código lleva su entrada de changelog, en lenguaje de usuario y en el mismo commit, y un hook lo comprueba. Los cambios internos van en una sección `Interno`. La experiencia que dio origen a REM es concluyente: cuando la entrada era opcional para lo "menor", 99 de 117 cambios quedaron sin ningún registro, porque cada uno era individualmente menor.
+
+`observable` exige entrada solo para cambios observables por usuarios. `deferred` es una excepción declarada (por ejemplo, un hub que todavía no instaló spokes en los repos de código): el registro por defecto pasa a ser el commit y el timeline se construye desde los commits.
 
 ---
 
@@ -465,11 +484,12 @@ REM separa:
 - **IMP:** qué se entregó y con qué evidencia;
 - **INC:** qué se rompió y qué aprendimos;
 - **AUDIT:** qué se encontró en una revisión sistemática;
-- **MEGA/PLAN:** qué estamos intentando lograr y cómo converge.
+- **MEGA/PLAN:** qué estamos intentando lograr y cómo converge;
+- **ARCH:** cómo es hoy una pieza del sistema, contrastado con el código en una fecha.
 
 No se duplica información por ceremonia.
 
-Un artefacto solo debe existir si responde una pregunta futura que los artefactos más baratos no responden bien.
+Un documento concreto solo debe existir si responde una pregunta futura que los artefactos más baratos no responden bien. Esta regla aplica a **instancias**, no a **tipos**: una adopción instala todos los tipos aunque algunos empiecen vacíos, y decide en cada cambio cuál merece.
 
 ---
 
@@ -544,7 +564,7 @@ Una organización PUEDE versionar además su propia Constitución independientem
 
 ## 18. Criterio de adopción
 
-Un proyecto puede decir **“usa REM 1.0”** cuando:
+Un proyecto puede decir **“usa REM 1.1”** cuando:
 
 - tiene política de selección;
 - tiene WIP explícito;
@@ -553,7 +573,8 @@ Un proyecto puede decir **“usa REM 1.0”** cuando:
 - conserva decisiones durables;
 - puede observar trabajo terminado;
 - mide al menos las cuatro métricas mínimas;
-- y no convierte todos los cambios en el artefacto más pesado.
+- no convierte todos los cambios en el artefacto más pesado;
+- y lo anterior se puede comprobar: `rem-doctor --adoption` sale sin errores y corre en CI (ver `docs/BOOTSTRAP.md`), y toda excepción está declarada en su Constitución.
 
 El objetivo de REM no es producir más proceso.
 

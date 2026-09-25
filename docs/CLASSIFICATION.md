@@ -2,7 +2,7 @@
 
 **Relata Engineering Methodology (REM)** es el nombre del proyecto y de la familia de especificaciones.
 
-La clasificación técnica de **REM 1.0** es:
+La clasificación técnica de **REM 1.1** es:
 
 > **Framework configurable de proceso de ingeniería de software y especificación de método**  
 > *Configurable software engineering process framework and method specification.*
@@ -19,7 +19,7 @@ El término no implica que REM sea una teoría científica sobre todas las metod
 
 ### Method specification
 
-`METHOD.md` es la **especificación normativa del método**. Define el kernel, las actividades, estados, responsabilidades, invariantes y reglas que determinan cuándo una adopción puede considerarse conforme con REM 1.0.
+`METHOD.md` es la **especificación normativa del método**. Define el kernel, las actividades, estados, responsabilidades, invariantes y reglas que determinan cuándo una adopción puede considerarse conforme con REM 1.1.
 
 ### Process framework
 
@@ -46,7 +46,7 @@ Ejemplo:
 ```text
 Relata Engineering Methodology
         ↓
-REM 1.0 — process framework + method specification
+REM 1.1 — process framework + method specification
         ↓
 tailoring / constitution / políticas locales
         ↓
@@ -64,17 +64,17 @@ Las tres palabras describen niveles distintos, por lo que no conviene tratarlas 
 | Término | En REM |
 |---|---|
 | **Methodology** | nombre paraguas y forma común de referirse al sistema completo |
-| **Method specification** | la norma versionada que define REM 1.0 |
+| **Method specification** | la norma versionada que define REM 1.1 |
 | **Process framework** | la arquitectura configurable que puede adaptarse a distintos proyectos |
 | **Configured process** | la instancia concreta de REM usada por un equipo/proyecto |
 
 Por ello, la descripción recomendada es:
 
-> **REM 1.0 es un framework configurable de proceso de ingeniería de software, publicado como una especificación de método.**
+> **REM 1.1 es un framework configurable de proceso de ingeniería de software, publicado como una especificación de método.**
 
 En inglés:
 
-> **REM 1.0 is a configurable software engineering process framework published as a method specification.**
+> **REM 1.1 is a configurable software engineering process framework published as a method specification.**
 
 ## 3. Relación conceptual con RUP
 
@@ -94,7 +94,7 @@ Cuando haya espacio para mayor precisión:
 
 ## 5. Estado de publicación
 
-REM 1.0 se publica como **open specification versionada**.
+REM 1.1 se publica como **open specification versionada**.
 
 La apertura se expresa mediante licencias explícitas según el tipo de material:
 

@@ -1,4 +1,4 @@
-# Flujo y WIP en REM 1.0
+# Flujo y WIP en REM 1.1
 
 ## 1. Flujo de referencia
 
@@ -42,6 +42,10 @@ Default:
 - `Observando` cuenta como WIP si requiere atención activa;
 - observación pasiva puede medirse aparte;
 - un incidente crítico puede preemptar un Plan.
+
+Con varias personas en el mismo megaplán, el WIP sigue siendo por humano, y quién edita qué
+está en [TEAM.md](TEAM.md). `scripts/rem-status.mjs` muestra el WIP de cada persona y los
+planes que se pueden tomar.
 
 ## 5. Pull
 
