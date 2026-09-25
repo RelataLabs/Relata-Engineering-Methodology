@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/rem-doctor.mjs --no-git --quiet || true"
+          }
+        ]
+      }
+    ]
+  }
+}
