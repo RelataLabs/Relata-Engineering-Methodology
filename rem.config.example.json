@@ -1,27 +1,129 @@
 {
-  "remVersion": "1.0",
-  "workRoots": [
-    "docs/rem/decisions",
-    "docs/rem/architecture",
-    "docs/rem/incidents",
-    "docs/rem/audits",
-    "docs/rem/implementations",
-    "docs/rem/megaplanes"
-  ],
-  "planStates": [
-    "Pendiente",
-    "Activo",
-    "Verificando",
-    "Desplegado",
-    "Observando",
-    "Pausado",
-    "Cerrado",
-    "Abandonado"
-  ],
+  "remVersion": "1.1",
+  "profile": "hub-multirepo",
+  "hub": {
+    "name": "project-docs",
+    "branch": "main"
+  },
+  "types": {
+    "adr": {
+      "dir": "architecture-decisions",
+      "label": "Architecture Decision Records",
+      "template": "templates/ADR.md",
+      "idPattern": "^ADR-\\d{4}$",
+      "fileNaming": "id-slug",
+      "sequence": "ADR-{NNNN}",
+      "states": ["Draft", "Proposed", "Accepted", "Superseded", "Rejected"]
+    },
+    "dec": {
+      "dir": "decision-notes",
+      "label": "Notas de decisión (DEC)",
+      "template": "templates/DECISION-NOTE.md",
+      "idPattern": "^DEC-\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+$",
+      "fileNaming": "unprefixed-id",
+      "states": ["Proposed", "Accepted", "Superseded"]
+    },
+    "incident": {
+      "dir": "incident-responses",
+      "label": "Incidentes (INC)",
+      "template": "templates/INCIDENT.md",
+      "idPattern": "^INC-\\d{4}-\\d{3}$",
+      "fileNaming": "id-slug",
+      "sequence": "INC-{YYYY}-{NNN}",
+      "states": ["Draft", "Investigating", "Mitigated", "Resolved", "Closed"]
+    },
+    "audit": {
+      "dir": "audits",
+      "label": "Auditorías (AUD)",
+      "template": "templates/AUDIT.md",
+      "idPattern": "^AUD-\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+$",
+      "fileNaming": "unprefixed-id",
+      "states": ["Draft", "Open", "In Review", "Closed"]
+    },
+    "imp": {
+      "dir": "implementation-records",
+      "label": "Implementation Records (IMP)",
+      "template": "templates/IMPLEMENTATION-RECORD.md",
+      "idPattern": "^IMP-\\d{4}-\\d{3}$",
+      "fileNaming": "id-slug",
+      "sequence": "IMP-{YYYY}-{NNN}",
+      "states": ["Draft", "Implemented", "Validated", "Deployed", "Observed", "Superseded"]
+    },
+    "mega": {
+      "dir": "megaplanes",
+      "label": "Megaplanes",
+      "template": "templates/MEGAPLAN.md",
+      "idPattern": "^MEGA-\\d{4}-\\d{3}$",
+      "fileNaming": "id-slug",
+      "sequence": "MEGA-{YYYY}-{NNN}",
+      "states": ["Pendiente", "Activo", "Verificando", "Desplegado", "Observando", "Pausado", "Cerrado", "Abandonado"]
+    },
+    "plan": {
+      "dir": "megaplanes/planes",
+      "label": "Planes",
+      "template": "templates/PLAN.md",
+      "idPattern": "^(MEGA-\\d{4}-\\d{3}-P\\d+|PLAN-\\d{4}-\\d{3})$",
+      "fileNaming": "id-slug",
+      "sequence": "PLAN-{YYYY}-{NNN}",
+      "states": ["Pendiente", "Activo", "Verificando", "Desplegado", "Observando", "Pausado", "Cerrado", "Abandonado"]
+    },
+    "arch": {
+      "dir": "docs/architecture",
+      "label": "Arquitectura vigente",
+      "template": "templates/ARCHITECTURE.md",
+      "idPattern": "^ARCH-[a-z0-9-]+$",
+      "fileNaming": "unprefixed-id",
+      "states": ["Vigente", "Obsoleto"]
+    }
+  },
+  "transientStates": ["Draft", "Proposed", "Investigating", "Open", "In Review"],
+  "repos": {
+    "app": { "path": "../app", "branch": "main", "public": false, "spoke": false },
+    "api": { "path": "../api", "branch": "main", "public": false, "spoke": false }
+  },
+  "changelog": {
+    "policy": "required",
+    "sections": ["Añadido", "Cambiado", "Corregido", "Seguridad", "Interno"]
+  },
+  "timeline": {
+    "file": "TIMELINE.md",
+    "source": "auto",
+    "gitTypes": ["feat", "fix", "perf", "refactor", "revert"],
+    "since": null
+  },
+  "generated": {
+    "index": "local",
+    "timeline": "local",
+    "readme": "README.md"
+  },
   "wip": {
     "maxActiveOrVerifyingPerOwner": 1
   },
+  "team": {
+    "owners": []
+  },
   "limits": {
-    "decisionNoteContentLines": 40
-  }
+    "decisionNoteContentLines": 40,
+    "staleDays": 7,
+    "deployDays": 14,
+    "archStaleDays": 90,
+    "changelogDryCommits": 10
+  },
+  "agentBlock": {
+    "file": "AGENTS.md",
+    "heading": "## Registro de trabajo"
+  },
+  "publicLeakTerms": ["Registro de trabajo", "instrucciones para agentes"],
+  "links": {
+    "exclude": ["templates/", "node_modules/"]
+  },
+  "secrets": {
+    "extraPatterns": [],
+    "exclude": ["node_modules/"]
+  },
+  "hooksDir": ".githooks",
+  "ci": {
+    "workflow": ".github/workflows/rem.yml"
+  },
+  "required": ["CONSTITUTION.md", "AGENTS.md", "README.md", "megaplanes/README.md"]
 }
