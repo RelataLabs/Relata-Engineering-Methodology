@@ -1,3 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 RelataLabs
+#
+# CI del propio REM. Hasta 1.0 este workflow corría el doctor sobre la raíz de REM, que no
+# tiene documentos: inspeccionaba cero y salía en verde siempre. Ahora audita un hub de
+# ejemplo completo (examples/hub) y corre las pruebas del tooling, incluidos los casos que
+# el doctor tiene que rechazar.
+
 name: REM doctor
 
 on:
@@ -19,8 +27,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: "24"
-      - name: Validate REM invariants
-        run: node scripts/rem-doctor.mjs
-      - name: Flow summary
+      - name: Pruebas del tooling
+        run: node --test tests/rem.test.mjs
+      - name: Doctor sobre el hub de ejemplo (adopción completa)
+        run: node scripts/rem-doctor.mjs --root examples/hub --no-git --adoption
+      - name: Índice y tablas de planes del ejemplo al día
+        run: node scripts/rem-index.mjs --root examples/hub --check
+      - name: Resumen de flujo del ejemplo
         if: always()
-        run: node scripts/rem-flow.mjs
+        run: node scripts/rem-flow.mjs --root examples/hub

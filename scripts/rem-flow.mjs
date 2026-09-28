@@ -3,83 +3,52 @@
 // Copyright 2026 RelataLabs
 
 /**
- * REM flow 1.0
+ * REM flow 1.1 — WIP, edad del trabajo, throughput y cycle time de los Plans.
  *
- * Resume WIP, work item age, throughput y cycle time de Plans con front-matter REM.
- * Sin dependencias externas.
+ * Son las cuatro métricas mínimas del kernel (METHOD §14). Salen de las fechas del
+ * front-matter (`started`, `closed`), así que un Plan sin ellas es invisible aquí: el
+ * doctor lo avisa (regla 24).
+ *
+ * Throughput cuenta solo `Cerrado`. `Abandonado` es un resultado legítimo, pero sumarlo
+ * inflaría la entrega (REM 1.0 lo contaba): se informa aparte.
+ *
+ * Uso:  node scripts/rem-flow.mjs [--days 30]
  */
 
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
-import { dirname, join, relative, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { ACTIVE_STATES, FINAL_STATES, arg, daysSince, loadConfig, loadDocs, resolveRoot } from './lib/rem.mjs'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const ROOT = resolve(__dirname, '..')
-const configPath = existsSync(resolve(ROOT, 'rem.config.json'))
-  ? resolve(ROOT, 'rem.config.json')
-  : resolve(ROOT, 'rem.config.example.json')
-const config = JSON.parse(readFileSync(configPath, 'utf8'))
-
-function walk(dir) {
-  if (!existsSync(dir)) return []
-  const out = []
-  for (const name of readdirSync(dir)) {
-    const p = join(dir, name)
-    const st = statSync(p)
-    if (st.isDirectory()) out.push(...walk(p))
-    else if (st.isFile() && p.endsWith('.md')) out.push(p)
-  }
-  return out
+const ROOT = resolveRoot(import.meta.url)
+const window = Number(arg('--days') ?? 30)
+const { config, error } = loadConfig(ROOT)
+if (!config) {
+  console.error(`✗ ${error}`)
+  process.exit(1)
 }
 
-function parse(path) {
-  const text = readFileSync(path, 'utf8')
-  const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)
-  if (!m) return null
-  const fm = {}
-  for (const line of m[1].split(/\r?\n/)) {
-    const i = line.indexOf(':')
-    if (i < 0) continue
-    fm[line.slice(0, i).trim()] = line.slice(i + 1).trim().replace(/^["']|["']$/g, '')
-  }
-  return fm
-}
-
-function days(a, b = new Date()) {
-  if (!a) return null
-  const d = new Date(`${a}T00:00:00Z`)
-  if (Number.isNaN(d.getTime())) return null
-  return Math.max(0, (b - d) / 86400000)
-}
-
-const plans = config.workRoots
-  .flatMap(p => walk(resolve(ROOT, p)))
-  .map(p => ({ path: p, fm: parse(p) }))
-  .filter(x => x.fm?.type === 'plan')
-
-const today = new Date()
-const open = plans.filter(x => !['Cerrado', 'Abandonado'].includes(x.fm.status))
-const closed = plans.filter(x => x.fm.status === 'Cerrado' && x.fm.started && x.fm.closed)
+const plans = loadDocs(ROOT, config).filter((d) => d.fm?.type === 'plan')
+const open = plans.filter((p) => !FINAL_STATES.has(p.fm.status))
+const active = plans.filter((p) => ACTIVE_STATES.has(p.fm.status))
+const closedIn = (state) => plans.filter((p) => p.fm.status === state && (daysSince(p.fm.closed) ?? Infinity) <= window)
 
 console.log('# REM Flow\n')
-console.log(`Plans: ${plans.length}`)
-console.log(`WIP abierto: ${open.length}`)
+console.log(`Plans: ${plans.length} · abiertos: ${open.length} · activos/verificando: ${active.length}`)
 
-for (const x of open.sort((a,b) => (days(b.fm.started) ?? -1) - (days(a.fm.started) ?? -1))) {
-  const age = days(x.fm.started, today)
-  console.log(`- ${x.fm.id}: ${x.fm.status} · owner=${x.fm.owner || '?'} · age=${age === null ? '?' : age.toFixed(1)}d`)
+for (const p of open.sort((a, b) => (daysSince(b.fm.started) ?? -1) - (daysSince(a.fm.started) ?? -1))) {
+  const age = daysSince(p.fm.started)
+  console.log(`- ${p.fm.id}: ${p.fm.status} · owner=${p.fm.owner || '?'} · edad=${age === null ? '?' : `${age}d`}`)
 }
 
-const last30 = plans.filter(x => x.fm.closed && days(x.fm.closed, today) <= 30)
-console.log(`\nThroughput 30d: ${last30.length}`)
+console.log(`\nThroughput ${window}d: ${closedIn('Cerrado').length} cerrados (+${closedIn('Abandonado').length} abandonados)`)
 
-const cycles = closed.map(x => days(x.fm.started, new Date(`${x.fm.closed}T00:00:00Z`))).filter(x => x !== null)
+const cycles = plans
+  .filter((p) => p.fm.status === 'Cerrado' && p.fm.started && p.fm.closed)
+  .map((p) => daysSince(p.fm.started, new Date(`${p.fm.closed}T00:00:00Z`)))
+  .filter((x) => x !== null)
+  .sort((a, b) => a - b)
 if (cycles.length) {
-  cycles.sort((a,b) => a-b)
   const median = cycles[Math.floor(cycles.length / 2)]
   const p85 = cycles[Math.min(cycles.length - 1, Math.ceil(cycles.length * 0.85) - 1)]
-  console.log(`Cycle time mediana: ${median.toFixed(1)}d`)
-  console.log(`Cycle time p85: ${p85.toFixed(1)}d`)
+  console.log(`Cycle time mediana: ${median}d · p85: ${p85}d (n=${cycles.length})`)
 } else {
-  console.log('Cycle time: sin datos suficientes')
+  console.log('Cycle time: sin datos suficientes (hacen falta Plans cerrados con started y closed)')
 }

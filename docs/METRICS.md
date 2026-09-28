@@ -1,4 +1,4 @@
-# Métricas REM 1.0
+# Métricas REM 1.1
 
 REM mide flujo y resultados, no actividad.
 

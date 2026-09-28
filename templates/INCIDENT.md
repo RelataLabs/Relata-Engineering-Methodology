@@ -1,47 +1,97 @@
 ---
 id: INC-YYYY-NNN
 type: incident
-title: "<incidente>"
+title: "<Qué se rompió, en una frase que se entienda sola>"
 date: YYYY-MM-DD
 status: Investigating
-severity: "<Critical|High|Medium|Low|Info>"
+severity: null
+detected: YYYY-MM-DD
+resolved: null
+repos: []
+commits: []
 related: []
 ---
 
-# INC-YYYY-NNN — <incidente>
+<!--
+PLANTILLA DE INCIDENTE (INC) — REM 1.1
 
-## Impacto
+Crear:  node scripts/rem-new.mjs incident <slug>
 
-Qué ocurrió para usuarios/sistemas.
+DOS MODOS. Pregunta: ¿existe alguien que pueda provocar esto a propósito?
+  · FUNCIONAL (no): usa 1, 3, 4, 7, 9, 10, 11 y 12. Borra 2, 5, 6 y 8 — escribir tres veces
+    "N/A, no es una vulnerabilidad" solo añade ruido.
+  · SEGURIDAD (sí): todas las secciones. `severity` lleva el vector CVSS v3.1 completo
+    ("CVSS:3.1/AV:N/…"). Bandas: Critical 9–10 (corrección el mismo día) · High 7–8.9 ·
+    Medium 4–6.9 · Low 0.1–3.9 · Info 0.
 
-## Detección
+Estados: Draft · Investigating · Mitigated · Resolved · Closed. Un incidente no se queda
+en `Investigating` después de corregido (regla 2 avisa a los siete días).
+-->
 
-Cómo se detectó.
+# INC-YYYY-NNN — <título corto>
 
-## Línea de tiempo
+## 1. Resumen ejecutivo
 
-- YYYY-MM-DD HH:MM — ...
+> 3–6 frases que alguien no técnico pueda seguir: qué pasó, qué tan grave fue, qué se hizo,
+> estado actual.
 
-## Causa
+## 2. Severidad y clasificación
 
-Causa técnica y condiciones que permitieron el incidente.
+- **CVSS v3.1:** `<vector>` → **<score>** (<banda>)
+- **Tipo:** <p. ej. control de acceso roto, exposición de datos>
+- **Explotabilidad:** <¿anónima? ¿requiere sesión? ¿precondiciones?>
 
-## Contención
+## 3. Línea de tiempo
 
-Qué detuvo el impacto.
+| Cuándo (YYYY-MM-DD HH:MM TZ) | Evento |
+|---|---|
+| | Detección |
+| | Contención |
+| | Remediación desplegada |
 
-## Remediación
+## 4. Detección
 
-Qué se cambió.
+> Cómo se detectó, y cuánto tardó. Si lo detectó un usuario, dilo: es un dato.
 
-## Verificación
+## 5. Sistemas y activos afectados
 
-Cómo sabemos que el vector quedó cerrado.
+> Repos, servicios, datos, tenants o usuarios potencialmente afectados. Específico.
 
-## Aprendizajes
+## 6. Vectores
 
-Qué regla, ADR, Plan o control debe cambiar.
+> Cómo se explota (o se explotaría): pasos reproducibles y rutas de código (`archivo:línea`).
 
-## Acciones
+## 7. Causa raíz
 
-Solo acciones con criterio de cierre.
+> Hasta la causa sistémica, no el síntoma. Cinco porqués u otra técnica.
+
+- **¿Por qué 1?** …
+- **¿Por qué 5? (raíz)** …
+
+## 8. Impacto
+
+- **Confidencialidad / integridad / disponibilidad:** …
+- **Datos expuestos o en riesgo:** …
+
+## 9. Contención
+
+> Qué detuvo el impacto, y cuándo.
+
+## 10. Remediación
+
+| Horizonte | Acción | Responsable | Estado | Evidencia |
+|---|---|---|---|---|
+| Inmediato | | | ☐ | |
+| Corto plazo | | | ☐ | |
+| Estructural (ADR/DEC/Plan) | | | ☐ | |
+
+## 11. Verificación
+
+> Cómo se comprobó que el vector quedó cerrado: la reproducción ahora falla, la prueba nueva
+> falla contra el árbol anterior.
+
+## 12. Lecciones
+
+- **Qué salió bien:** …
+- **Qué salió mal:** …
+- **Qué cambiamos para que no vuelva a pasar:** …

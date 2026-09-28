@@ -1,48 +1,100 @@
 ---
 id: IMP-YYYY-NNN
 type: imp
-title: "<entrega>"
+title: "<Qué se entregó, en una frase que se entienda sola>"
 date: YYYY-MM-DD
 status: Implemented
-related: []
+repos: []
 commits: []
-deployed:
-observed:
+related: []
+deployed: null
+observed: null
 ---
 
-# IMP-YYYY-NNN — <entrega>
+<!--
+PLANTILLA DE IMPLEMENTATION RECORD (IMP) — REM 1.1
 
-## Qué quedó
+Crear:  node scripts/rem-new.mjs imp <slug>
 
-Capacidad entregada, expresada en lenguaje verificable.
+Conecta una entrega concreta con su código, su evidencia, su estado de despliegue y lo que
+le falta. No sustituye al ADR (el porqué) ni al megaplán (el viaje): es el destino.
 
-## Límites
+DOS MODOS:
+  · LITE (lo normal): secciones 1, 3, 5, 9, 10, 13 y 14.
+  · COMPLETO: entregas grandes o que abren superficie de seguridad nueva. Todas.
+Si no es una entrega sino una regla pequeña, no es un IMP: es una DEC.
 
-Qué no quedó y por qué.
+Estados: Draft · Implemented · Validated · Deployed · Observed · Superseded.
+`Validated` confirma evidencia en el entorno declarado; NO implica despliegue. Un IMP que
+pasa `deployDays` sin `deployed` recibe aviso (regla 3).
+-->
 
-## Evidencia
+# IMP-YYYY-NNN — <título corto>
 
-- pruebas:
-- build:
-- entorno:
-- commit/release:
-- evidencia manual:
+## 1. Resumen
 
-## Despliegue
+> Qué se entregó, qué resultado observable produce y su estado real (¿desplegado?).
 
-Dónde y cuándo.
+## 2. Problema y estado anterior
 
-## Observación
+## 3. Alcance
 
-Qué señal posterior al deploy se comprobó.
+- **Incluido:** …
+- **Fuera de alcance intencional:** … (una decisión, no una deuda)
 
-## Riesgo residual
+## 4. Invariantes y frontera de confianza
 
-Riesgos conocidos y aceptados.
+| Invariante | Cómo se garantiza | Evidencia |
+|---|---|---|
+| <propiedad que nunca debe romperse> | <mecanismo> | `archivo:línea` / prueba |
 
-## Pendientes reales
+## 5. Qué quedó
 
-| Área | Gap | Prioridad | Criterio de cierre | Estado |
-|---|---|---|---|---|
+### 5.1 <Subsistema>
 
-No uses esta tabla para decisiones intencionales de producto: eso va en “Límites” o DEC.
+- <comportamiento implementado>
+- **Evidencia:** `repo/ruta`
+
+## 6. Contratos, datos y permisos
+
+> Endpoints, eventos, entidades, migraciones, matriz de permisos.
+
+## 7. Seguridad y privacidad
+
+## 8. Migración, compatibilidad y recuperación
+
+## 9. Verificación
+
+### Ejecutado y aprobado
+
+| Repo / entorno | Comando o escenario | Resultado | Fecha |
+|---|---|---|---|
+| | | | |
+
+### No ejecutado
+
+### No cubierto
+
+## 10. Despliegue
+
+> Dónde, cuándo, con qué comprobación posterior.
+
+## 11. Observación
+
+> Qué señal posterior al despliegue se comprobó.
+
+## 12. Rollback
+
+## 13. Pendientes reales
+
+| ID | Qué funciona hoy | Límite | Mejora | Criterio de cierre | Prioridad | Estado |
+|---|---|---|---|---|---|---|
+| FUT-<ÁREA>-NNN | | | | | P0–P3 | Open |
+
+> P0 bloquea despliegue o escalado; P1 siguiente ciclo; P2 planificada; P3 oportunidad.
+> Las limitaciones intencionales de producto van en Alcance, no aquí.
+
+## 14. Commits y documentos
+
+> Los commits van en el front-matter (`repo@hash`). Aquí, los documentos: ADR, plan del
+> megaplán que la produjo, auditorías.

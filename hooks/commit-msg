@@ -1,0 +1,88 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 RelataLabs
+#
+# commit-msg — gate de registro de REM 1.1. El mismo fichero sirve para el hub y para
+# cada repo de código (spoke): se copia a .githooks/commit-msg y se activa por clon con
+#   git config core.hooksPath .githooks      (o node scripts/rem-install.mjs en el hub)
+#
+# Cada regla existe por un fallo medido en el hub de origen de REM, no por gusto:
+#   1. formato de asunto ....... commits con asunto "." en el propio hub
+#   2. atribución de IA ........ limpiarla después obligó a reescribir historia y dejó
+#                                3 hashes citados sin destino (opcional: Constitución)
+#   3. cuerpo obligatorio ...... 42 de 117 commits sin ninguna explicación
+#   4. entrada de CHANGELOG .... 99 de 117 cambios sin ningún registro
+#
+# Bypass consciente: git commit --no-verify
+
+# --- CONFIG: lo único que se adapta por proyecto (y se declara en la Constitución) -----
+TYPES='feat|fix|chore|docs|refactor|perf|test|build|ci|style|revert'
+MAX_LEN=72
+REQUIRE_BODY=1           # 0 = el cuerpo es opcional
+BLOCK_AI_ATTRIBUTION=0   # 1 = rechaza Co-Authored-By de herramientas, "Generated with", etc.
+REQUIRE_CHANGELOG=1      # 1 = si el repo tiene CHANGELOG.md, tocar código exige tocarlo
+CODE_RE='\.(ts|tsx|js|jsx|mjs|cjs|json|css|scss|sql|sh|ya?ml|py|toml|go|rs|dart|kt|java|rb|php|cs|swift|vue|svelte)$|(^|/)Dockerfile'
+CHANGELOG_EXEMPT_RE='^(CHANGELOG\.md|README\.md|AGENTS\.md|CLAUDE\.md|TIMELINE\.md|\.githooks/|\.github/|\.gitignore|docs/)'
+LOCK_RE='(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|uv\.lock|poetry\.lock|Cargo\.lock|\.lock)$'
+# ---------------------------------------------------------------------------------------
+
+MSG_FILE="$1"
+SUBJECT=$(head -1 "$MSG_FILE")
+BODY=$(sed -n '3,$p' "$MSG_FILE" | grep -v '^#' | grep -v '^[[:space:]]*$')
+
+fail() {
+  echo "" >&2
+  echo "  ✗ commit rechazado: $1" >&2
+  [ -n "$2" ] && echo "    $2" >&2
+  echo "    (si de verdad no aplica: git commit --no-verify)" >&2
+  echo "" >&2
+  exit 1
+}
+
+# Los commits que git genera solo no pasan por estas reglas.
+case "$SUBJECT" in
+  Merge*|Revert*|fixup!*|squash!*|amend!*) exit 0 ;;
+esac
+
+# --- 1. Formato del asunto -------------------------------------------------------------
+echo "$SUBJECT" | grep -qE "^($TYPES)(\([a-z0-9._/-]+\))?!?(\[trivial\])?: .+" \
+  || fail "el asunto debe ser 'tipo(ámbito): qué cambia'" "tipos: $(echo "$TYPES" | tr '|' ' ')"
+
+LEN=$(printf %s "$SUBJECT" | wc -m | tr -d ' ')
+[ "$LEN" -le "$MAX_LEN" ] || fail "asunto de $LEN caracteres (máximo $MAX_LEN)"
+
+# --- 2. Atribución a herramientas de IA (opcional) -------------------------------------
+# Se bloquea la ATRIBUCIÓN, no la palabra: mencionar CLAUDE.md o .claude/ es legítimo.
+if [ "$BLOCK_AI_ATTRIBUTION" = "1" ]; then
+  if grep -qiE '^[[:space:]]*Co-Authored-By:.*(claude|copilot|chatgpt|openai|anthropic|cursor|gemini|noreply@)|Generated with|🤖' "$MSG_FILE" \
+     || grep -qiE '(with|by|via|using|thanks to) (claude|copilot|chatgpt|cursor|gemini|an? (AI|LLM))' "$MSG_FILE"; then
+    fail "el mensaje atribuye la autoría a una herramienta de IA" \
+         "la Constitución de este proyecto lo prohíbe; la autoría es la de quien commitea"
+  fi
+fi
+
+# --- 3. Cuerpo obligatorio, con escape explícito -----------------------------------------
+if [ "$REQUIRE_BODY" = "1" ]; then
+  case "$SUBJECT" in
+    *"[trivial]"*) ;;
+    *)
+      [ -n "$BODY" ] || fail "falta el cuerpo del mensaje" \
+        "explica síntoma → causa raíz → por qué esta solución, y qué verificaste. Si de verdad no hace falta: 'tipo(ámbito)[trivial]: …'"
+      ;;
+  esac
+fi
+
+# --- 4. Tocaste código ⇒ tocaste CHANGELOG.md ---------------------------------------------
+# Solo si el repo ya adoptó el registro continuo: se mira que el fichero exista, no que
+# esté versionado (en el commit que lo introduce todavía no lo está).
+if [ "$REQUIRE_CHANGELOG" = "1" ] && [ -f CHANGELOG.md ]; then
+  STAGED=$(git diff --cached --name-only)
+  CODE=$(echo "$STAGED" | grep -vE "$CHANGELOG_EXEMPT_RE" | grep -vE "$LOCK_RE" | grep -E "$CODE_RE")
+  if [ -n "$CODE" ]; then
+    echo "$STAGED" | grep -q '^CHANGELOG\.md$' \
+      || fail "cambiaste código sin registrar la entrada en CHANGELOG.md" \
+              "añádela bajo '## $(date +%F)' en lenguaje de usuario, no de commit."
+  fi
+fi
+
+exit 0

@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 RelataLabs
+#
+# pre-commit — solo el hub. Ejecuta el doctor sin git y, si las vistas generadas tienen
+# escritor local, las regenera y las añade al commit. La lógica vive en
+# scripts/rem-precommit.mjs para leer rem.config.json.
+
+command -v node >/dev/null 2>&1 || { echo "  ⚠ node no está en el PATH: pre-commit de REM omitido" >&2; exit 0; }
+exec node scripts/rem-precommit.mjs

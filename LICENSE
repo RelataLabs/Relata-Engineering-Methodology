@@ -15,7 +15,8 @@ The following material is licensed under the Creative Commons Attribution 4.0 In
 - REFERENCES.md
 - CHANGELOG.md
 - docs/**
-- templates/**
+- templates/** (except templates/ci/** and templates/claude-settings.json)
+- examples/** (except any rem.config.json, which follows section 2)
 
 You may share and adapt this material, including for commercial use, provided that you give appropriate attribution, provide a link to the license, and indicate whether changes were made.
 
@@ -28,8 +29,12 @@ SPDX identifier: CC-BY-4.0
 The following material is licensed under the Apache License, Version 2.0, unless a file states otherwise:
 
 - scripts/**
+- hooks/**
+- tests/**
 - .github/workflows/**
-- rem.config.example.json
+- templates/ci/**
+- templates/claude-settings.json
+- rem.config.example.json and examples/**/rem.config.json
 - future executable REM tooling explicitly marked Apache-2.0
 
 Full license text: LICENSE-APACHE-2.0

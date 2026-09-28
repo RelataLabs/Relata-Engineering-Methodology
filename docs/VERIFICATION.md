@@ -1,4 +1,4 @@
-# Verificación basada en riesgo — REM 1.0
+# Verificación basada en riesgo — REM 1.1
 
 El nivel se elige por impacto y frontera de confianza, no por tamaño del diff.
 

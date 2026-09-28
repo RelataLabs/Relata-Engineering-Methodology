@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 RelataLabs
+#
+# CI de un hub REM 1.1. Se copia a .github/workflows/rem.yml.
+#
+# La podredumbre documental no la causa un commit: la causa el paso del tiempo (un
+# incidente que se queda en `Investigating` ya corregido, una entrega que sigue "sin
+# desplegar"). Ningún hook local lo ve porque nadie hizo nada. Esto sí: corre con el reloj.
+#
+# - En cada push y PR: doctor --adoption (sin git: los repos de código no se clonan aquí).
+# - En push a la rama principal, si rem.config.json dice generated.index = "ci": regenera el
+#   índice y las tablas de planes y los commitea. Es el ÚNICO escritor de esas vistas, así
+#   que cinco personas empujando a la vez no chocan en el README (docs/TEAM.md).
+# - Cada lunes: doctor, y si falla abre (o comenta) un issue con la etiqueta `rem-doctor`.
+
+name: REM
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * 1"
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: rem-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Doctor
+        id: doctor
+        run: |
+          set +e
+          node scripts/rem-doctor.mjs --no-git --adoption > doctor.txt 2>&1
+          code=$?
+          cat doctor.txt
+          { echo 'report<<REPORT'; cat doctor.txt; echo 'REPORT'; } >> "$GITHUB_OUTPUT"
+          exit $code
+
+      - name: Regenerar vistas (escritor único)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          writer=$(node -e "const c=require('./rem.config.json');console.log((c.generated&&c.generated.index)||'local')")
+          if [ "$writer" != "ci" ]; then
+            node scripts/rem-index.mjs --check
+            exit $?
+          fi
+          node scripts/rem-index.mjs
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(rem)[trivial]: regenerar índice y tablas de planes"
+          git pull --rebase origin main && git push origin HEAD:main
+
+      - name: Issue si el chequeo semanal falla
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'rem-doctor: hallazgos en el hub'
+            const body = [
+              'El chequeo semanal encontró documentación desactualizada o inconsistente.',
+              '', '```', `${{ steps.doctor.outputs.report }}`, '```', '',
+              'Reproducir en local, con los repos de código clonados (añade las reglas de commits):',
+              '`node scripts/rem-doctor.mjs`',
+            ].join('\n')
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'rem-doctor',
+            })
+            if (open.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: open[0].number, body,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['rem-doctor'],
+              })
+            }

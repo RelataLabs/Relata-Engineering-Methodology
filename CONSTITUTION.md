@@ -2,90 +2,102 @@
 
 > Este archivo NO es parte universal del kernel de REM. Se copia y adapta por proyecto.
 > Las decisiones técnicas concretas viven aquí para que no contaminen la metodología general.
+> Hay dos ejemplos completos en `examples/`: uno de una sola arquitectura y otro multirepo con
+> una arquitectura por repositorio.
 
 **Versión de constitución:** 0.1  
-**Basada en:** REM 1.0
+**Basada en:** REM 1.1  
+**Coordinación:**
 
-## 1. Principios técnicos
+Los planes citan estas secciones por número en su apartado "Restricciones heredadas", así que
+conviene no renumerarlas.
 
-Define los principios no negociables del proyecto.
+## 1. Repositorios
 
-Ejemplos posibles, no obligatorios:
+| Repo | Rol | Stack | Rama de integración |
+|---|---|---|---|
+| | | | |
 
-- arquitectura modular;
-- Clean Architecture;
-- SOLID;
-- DDD;
-- preferencia por composición;
-- compatibilidad hacia atrás;
-- contratos API estables;
-- accesibilidad;
-- privacidad por diseño.
+## 2. Arquitectura por repositorio
 
-## 2. Arquitectura
+Una fila por repo. Es donde vive lo que en otros proyectos se impone a todos ("Clean
+Architecture en todos los repos"): aquí se dice repo por repo, con lo que el código mantiene de
+verdad.
 
-- límites de módulos:
-- dependencias permitidas:
-- patrones prohibidos:
-- estrategia de datos:
-- estrategia de migraciones:
+| Repo | Patrón | Reglas (dependencias permitidas y prohibidas) | Desviaciones medidas |
+|---|---|---|---|
+| | | | |
+
+Principios transversales, si los hay (composición, compatibilidad hacia atrás, contratos API
+estables, accesibilidad, privacidad por diseño…):
 
 ## 3. Seguridad y datos
 
 - clasificación de datos:
+- datos que nunca van en logs, eventos o URLs:
 - acciones que requieren aprobación humana:
 - política de secretos:
-- política de backups/rollback:
-- reglas de autorización:
+- migraciones, seeders y backups:
+- reglas de autorización y aislamiento entre clientes:
 
 ## 4. Verificación
 
-Nivel V0:
-Nivel V1:
-Nivel V2:
-Nivel V3:
+Con los comandos reales de cada repo; el éxito se lee del código de salida.
 
-Suites obligatorias:
+| Nivel | Cuándo | Evidencia mínima (comandos) |
+|---|---|---|
+| V0 | | |
+| V1 | | |
+| V2 | | |
+| V3 | | |
 
 ## 5. Git y entrega
 
-- rama principal:
-- política de ramas:
+- ramas (integración, personales, por plan):
 - política de PR:
-- política de commits:
-- política de changelog:
-- política de reescritura de historia:
+- política de commits (formato, cuerpo):
+- política de changelog (`required` / `observable` / `deferred`, METHOD §11.2):
+- atribución de IA en commits (bloqueada / permitida):
+- reescritura de historia:
 - despliegue:
 - rollback:
 
-## 6. Agentes
+## 6. Topología documental
+
+- perfil (`hub-multirepo` / `in-repo`), con o sin spokes:
+- dónde queda el registro por defecto de un cambio:
+- qué pasa con la documentación que ya existía:
+
+## 7. Agentes
 
 - herramientas autorizadas:
 - acciones permitidas sin confirmación:
 - acciones que requieren aprobación:
 - acciones prohibidas:
-- política de atribución de IA:
 - archivos de contexto canónicos:
 
-## 7. WIP
+## 8. Equipo y coordinación
 
-Default REM: 1 Plan activo/verificando por humano.
+- personas y su handle (`owner`):
+- WIP (default REM: 1 Plan activo/verificando por humano):
+- orden de selección:
+- protocolo (docs/TEAM.md): quién coordina cada megaplán, cómo se toma un plan, quién
+  regenera las vistas, cómo llegan los cambios al hub:
 
-Valor adoptado:
+## 9. Recursos compartidos
 
-## 8. Selección
+Lo que varios planes consumen y solo se cambia con DEC.
 
-Orden de prioridad adoptado:
+| Recurso | Dónde vive |
+|---|---|
+| | |
 
-1.
-2.
-3.
+## 10. Excepciones vigentes
 
-## 9. Excepciones
+Toda regla de REM o de esta Constitución que no se cumple todavía.
 
-Toda excepción temporal debe declarar:
+| Regla exceptuada | Motivo | Responsable | Condición o fecha de salida |
+|---|---|---|---|
+| | | | |
 
-- regla exceptuada;
-- motivo;
-- responsable;
-- fecha o condición de salida.
+## 11. Preguntas abiertas
