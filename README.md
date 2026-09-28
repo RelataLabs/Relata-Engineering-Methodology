@@ -6,7 +6,7 @@
 > terminado (`rem-doctor --adoption` sin errores). ¿Varias personas van a trabajar el mismo
 > megaplán? Lee también [docs/TEAM.md](docs/TEAM.md).
 
-**REM 1.1** es un método de ingeniería de software diseñado para equipos pequeños y medianos que trabajan con agentes de IA como parte normal del desarrollo.
+**REM 1.1** es una metodología de ingeniería de software diseñada para equipos pequeños y medianos que trabajan con agentes de IA como parte normal del desarrollo.
 
 Su clasificación técnica es **framework configurable de proceso de ingeniería de software y especificación de método** (*configurable software engineering process framework and method specification*). `Relata Engineering Methodology` es el nombre paraguas del proyecto; la distinción formal entre metodología, método, framework y proceso configurado está documentada en [docs/CLASSIFICATION.md](docs/CLASSIFICATION.md).
 
