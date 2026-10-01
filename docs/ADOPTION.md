@@ -10,9 +10,9 @@ detrás de esos pasos.
 Son dos cosas distintas y REM 1.0 las mezclaba:
 
 - **Instalar** es poner la estructura, los tipos, las plantillas, el tooling, los hooks y el CI.
-  Se instala **todo**, aunque algunas carpetas empiecen vacías. Una carpeta vacía no cuesta nada;
-  un tipo que falta hace que el primer documento de ese tipo se escriba en otro lado o no se
-  escriba.
+  Se instala **todo**, aunque algunas carpetas empiecen vacías, para que el primer documento de
+  cada tipo tenga un destino definido. La instalación y mantenimiento tienen un coste que se
+  evalúa junto con el uso del método.
 - **Usar** es decidir qué documento merece cada cambio. Eso sí es proporcional: la mayoría de los
   cambios no llevan documento en el hub, y el megaplán no se usa para un bug pequeño.
 

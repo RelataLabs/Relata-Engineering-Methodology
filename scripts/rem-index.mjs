@@ -17,7 +17,8 @@
  * En equipo, estas vistas tienen UN solo escritor (config `generated.index`):
  *   - `ci`: solo CI las regenera en la rama principal; nadie las commitea a mano, así
  *     que no hay conflictos cuando cinco personas empujan a la vez;
- *   - `local`: el hook pre-commit las regenera en cada commit (equipos de una persona).
+ *   - `local`: el autor regenera y prepara las vistas; pre-commit comprueba el índice
+ *     sin modificarlo (equipos de una persona).
  *
  * Uso:  node scripts/rem-index.mjs            regenera
  *       node scripts/rem-index.mjs --check    sale 1 si algo está desactualizado

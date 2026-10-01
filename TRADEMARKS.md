@@ -10,10 +10,10 @@ You may use the names **RelataLabs**, **Relata Engineering Methodology**, and **
 
 Examples:
 
-- `Based on Relata Engineering Methodology (REM) 1.0 by RelataLabs.`
-- `An adaptation of REM 1.0 for Acme Corp.`
+- `Based on Relata Engineering Methodology (REM) 1.1 by RelataLabs.`
+- `An adaptation of REM 1.1 for Acme Corp.`
 - `Compatible with the REM Plan format.`
-- `Derived from REM 1.0; modified by Example Team.`
+- `Derived from REM 1.1; modified by Example Team.`
 
 ## Do not imply official status
 
@@ -32,9 +32,9 @@ The licenses allow modification of the underlying licensed material. This naming
 
 Good examples:
 
-- `REM 1.0 — Acme adaptation`
-- `Acme Engineering Process, based on REM 1.0`
-- `Fork of REM 1.0`
+- `REM 1.1 — Acme adaptation`
+- `Acme Engineering Process, based on REM 1.1`
+- `Fork of REM 1.1`
 
 Avoid names or presentation such as `Official REM 2.0 by RelataLabs` unless RelataLabs actually published or authorized that release.
 

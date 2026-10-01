@@ -5,43 +5,42 @@
 /**
  * REM pre-commit 1.1 — lo que el hook `pre-commit` del hub ejecuta.
  *
- * 1. El doctor sin git (rápido): un commit no puede introducir un documento roto.
- * 2. Si las vistas generadas tienen escritor local (`generated.index = "local"`), las
- *    regenera y las añade al commit. Con escritor `ci`, NO las toca: en equipo, que cada
- *    commit regenere el README es la receta para que cinco personas choquen en él.
+ * Valida un snapshot del índice con el tooling instalado, nunca con scripts del snapshot.
+ * No modifica working tree ni staging parcial. Con escritor local comprueba las vistas;
+ * el autor las regenera y prepara explícitamente. Con escritor CI, ese trabajo es de CI.
  */
 
-import { execFileSync, spawnSync } from 'node:child_process'
-import { join } from 'node:path'
+import { spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { loadConfig, resolveRoot } from './lib/rem.mjs'
+import { stagedSnapshot } from './lib/staged.mjs'
 
 const ROOT = resolveRoot(import.meta.url)
-const { config, error } = loadConfig(ROOT)
-if (!config) {
-  console.error(`  ✗ ${error}`)
-  process.exit(1)
-}
-
-const node = (script, args = []) => spawnSync(process.execPath, [join(ROOT, 'scripts', script), ...args], { cwd: ROOT, encoding: 'utf8' })
-
-const doctor = node('rem-doctor.mjs', ['--no-git', '--quiet'])
-if (doctor.status !== 0) {
-  const full = node('rem-doctor.mjs', ['--no-git'])
-  process.stderr.write(full.stdout)
-  console.error('  ✗ commit rechazado: el doctor encontró errores (bypass consciente: git commit --no-verify)')
-  process.exit(1)
-}
-
-if (config.generated.index === 'local') {
-  const listed = node('rem-index.mjs', ['--list'])
-  if (listed.status !== 0) {
-    process.stderr.write(listed.stderr)
-    process.exit(1)
+let snapshot
+try {
+  snapshot = stagedSnapshot(ROOT)
+  if (!existsSync(join(snapshot.root, 'rem.config.json'))) throw new Error('falta rem.config.json en el índice; el ejemplo no sustituye la configuración del hub')
+  const { config, error } = loadConfig(snapshot.root, ['--source-root', ROOT])
+  if (!config) throw new Error(`falta una configuración REM válida en el índice: ${error}`)
+  const scripts = dirname(fileURLToPath(import.meta.url))
+  const node = (script, args) => {
+    const result = spawnSync(process.execPath, [join(scripts, script), '--root', snapshot.root, '--source-root', ROOT, ...args], {
+      cwd: snapshot.root, encoding: 'utf8',
+    })
+    if (result.error) throw result.error
+    if (result.status !== 0) throw new Error((result.stdout ?? '') + (result.stderr ?? ''))
   }
-  const changed = listed.stdout.split(/\r?\n/).filter(Boolean)
-  if (changed.length) {
-    node('rem-index.mjs')
-    execFileSync('git', ['add', '--', ...changed], { cwd: ROOT })
-    console.log(`  ✓ regenerado: ${changed.join(', ')}`)
+  node('rem-doctor.mjs', ['--no-git'])
+  if (config.generated.index === 'local') {
+    try { node('rem-index.mjs', ['--check']) } catch (error) {
+      throw new Error(`${error.message}\nRegenera con node scripts/rem-index.mjs y prepara sus cambios con git add.`)
+    }
   }
+} catch (error) {
+  console.error(`  ✗ commit rechazado al validar el índice:\n${error.message}`)
+  process.exitCode = 1
+} finally {
+  snapshot?.cleanup()
 }

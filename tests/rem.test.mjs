@@ -11,17 +11,21 @@
 
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { after, describe, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { nextSequenceId, parseFrontMatter } from '../scripts/lib/rem.mjs'
+import { daysSince, nextSequenceId, parseFrontMatter } from '../scripts/lib/rem.mjs'
 
 const REM = join(dirname(fileURLToPath(import.meta.url)), '..')
 const EXAMPLE = join(REM, 'examples', 'hub')
 const temps = []
-after(() => temps.forEach((t) => rmSync(t, { recursive: true, force: true })))
+after(() => temps.forEach((t) => {
+  const target = resolve(t)
+  if (dirname(target) !== resolve(tmpdir()) || !target.startsWith(join(resolve(tmpdir()), 'rem-'))) throw new Error('Temporal fuera del directorio esperado')
+  rmSync(target, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+}))
 
 function run(script, root, ...args) {
   const r = spawnSync(process.execPath, [join(REM, 'scripts', script), '--root', root, ...args], {
@@ -39,6 +43,8 @@ function hub(files = {}, tweak = (c) => c) {
   for (const t of Object.values(config.types)) t.template = join(REM, t.template.replace('../../', ''))
   config.ci = { workflow: join(REM, '.github', 'workflows', 'rem-doctor.yml') }
   config.required = []
+  config.repos = {}
+  config.agentBlock = null
   writeFileSync(join(root, 'rem.config.json'), JSON.stringify(tweak(config), null, 2))
   for (const t of Object.values(config.types)) mkdirSync(join(root, t.dir), { recursive: true })
   writeFileSync(join(root, 'README.md'), '# Hub\n\n<!-- REM:INDEX:START — generado por scripts/rem-index.mjs, no editar a mano -->\n<!-- REM:INDEX:END -->\n')
@@ -270,5 +276,276 @@ describe('hook commit-msg', () => {
     const hook = readFileSync(join(dir, 'commit-msg'), 'utf8').replace('BLOCK_AI_ATTRIBUTION=0', 'BLOCK_AI_ATTRIBUTION=1')
     writeFileSync(join(dir, 'commit-msg'), hook)
     assert.equal(check(dir, msg), 1)
+  })
+})
+
+// Fechas relativas para que la ventana y los casos futuros sigan siendo pruebas reales.
+const day = (offset = 0) => new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10)
+const planFile = (id) => `megaplanes/planes/${id}-x.md`
+const closedPlan = (id, started, closed, extra = {}) => plan(id, { status: 'Cerrado', owner: 'ana', started, closed, ...extra })
+
+describe('regresiones: fechas y métricas de flujo', () => {
+  test('rechaza fechas normalizadas por Date y respeta años bisiestos', () => {
+    assert.equal(daysSince('2026-02-30'), null)
+    assert.equal(daysSince('2025-02-29'), null)
+    assert.equal(daysSince('2024-02-29', new Date('2024-03-01T00:00:00Z')), 1)
+    const root = hub({ 'architecture-decisions/ADR-0001-a.md': adr('ADR-0001', { date: '2026-02-30' }) })
+    assert.equal(run('rem-doctor.mjs', root, '--no-git').code, 1)
+  })
+  test('doctor y flow rechazan fecha futura, invertida e inexistente', () => {
+    for (const [started, closed, expected] of [[day(-3), day(1), /futuro/], [day(-1), day(-2), /anterior/], ['2026-02-30', day(-1), /calendario/]]) {
+      const root = hub({ [planFile('PLAN-2026-001')]: closedPlan('PLAN-2026-001', started, closed) })
+      const doctor = run('rem-doctor.mjs', root, '--no-git', '--strict')
+      assert.equal(doctor.code, 1, doctor.out)
+      assert.match(doctor.out, /\[regla 24\]/)
+      assert.match(doctor.out, expected)
+      const flow = run('rem-flow.mjs', root)
+      assert.equal(flow.code, 1, flow.out)
+      assert.match(flow.out, expected)
+      assert.doesNotMatch(flow.out, /Throughput/)
+    }
+  })
+  test('flow no oculta planes finalizados sin fechas', () => {
+    const root = hub({ [planFile('PLAN-2026-001')]: plan('PLAN-2026-001', { status: 'Cerrado' }) })
+    const flow = run('rem-flow.mjs', root)
+    assert.equal(flow.code, 1, flow.out)
+    assert.match(flow.out, /sin started|sin closed/)
+  })
+  test('mediana par es el promedio central y no mezcla abandonos con entregas', () => {
+    const root = hub({
+      [planFile('PLAN-2026-001')]: closedPlan('PLAN-2026-001', day(-3), day(-1)),
+      [planFile('PLAN-2026-002')]: closedPlan('PLAN-2026-002', day(-11), day(-1)),
+      [planFile('PLAN-2026-003')]: closedPlan('PLAN-2026-003', day(-90), day(-1), { status: 'Abandonado' }),
+    })
+    const flow = run('rem-flow.mjs', root)
+    assert.equal(flow.code, 0, flow.out)
+    assert.match(flow.out, /mediana: 6d.*p85: 10d.*n=2/)
+    assert.match(flow.out, /2 cerrados \(\+1 abandonados\)/)
+  })
+  test('ventana UTC incluye hoy y excluye exactamente el día N; valida --days', () => {
+    const root = hub({
+      [planFile('PLAN-2026-001')]: closedPlan('PLAN-2026-001', day(-1), day()),
+      [planFile('PLAN-2026-002')]: closedPlan('PLAN-2026-002', day(-30), day(-29)),
+      [planFile('PLAN-2026-003')]: closedPlan('PLAN-2026-003', day(-31), day(-30)),
+    })
+    assert.match(run('rem-flow.mjs', root, '--days', '30').out, /2 cerrados/)
+    assert.match(run('rem-flow.mjs', root, '--days', '1').out, /1 cerrados/)
+    for (const value of ['0', '-2', '1.5', 'oops']) assert.equal(run('rem-flow.mjs', root, '--days', value).code, 1)
+  })
+  test('WIP iniciado incluye pausa y observación; pendiente sin empezar no consume WIP', () => {
+    const files = {}
+    for (const [index, status] of ['Activo', 'Pausado', 'Desplegado', 'Observando', 'Pendiente'].entries()) {
+      const id = `PLAN-2026-00${index + 1}`
+      files[planFile(id)] = plan(id, {
+        status, owner: 'ana', ...(status === 'Pendiente' ? {} : { started: day(-5) }),
+        ...(status === 'Pausado' ? { paused: day(-2), pause_reason: 'Espera de validación' } : {}),
+      })
+    }
+    const root = hub(files)
+    const flow = run('rem-flow.mjs', root)
+    assert.equal(flow.code, 0, flow.out)
+    assert.match(flow.out, /abiertos: 5 · WIP iniciado: 4 · activos\/verificando: 1/)
+    assert.match(flow.out, /Pausado.*edad=5d/)
+    assert.equal(run('rem-doctor.mjs', root, '--no-git', '--strict').code, 0)
+  })
+  test('pausa requiere fecha y motivo; reanudar no exige esos campos', () => {
+    const id = 'PLAN-2026-001'
+    const root = hub({ [planFile(id)]: plan(id, { status: 'Pausado', owner: 'ana', started: day(-5) }) })
+    const invalid = run('rem-doctor.mjs', root, '--no-git')
+    assert.equal(invalid.code, 1, invalid.out)
+    assert.match(invalid.out, /sin paused/)
+    assert.match(invalid.out, /sin pause_reason/)
+    writeFileSync(join(root, planFile(id)), plan(id, { status: 'Pausado', owner: 'ana', started: day(-5), paused: day(-2), pause_reason: 'Espera externa' }))
+    assert.equal(run('rem-doctor.mjs', root, '--no-git', '--strict').code, 0)
+    writeFileSync(join(root, planFile(id)), plan(id, { status: 'Activo', owner: 'ana', started: day(-5) }))
+    assert.equal(run('rem-doctor.mjs', root, '--no-git', '--strict').code, 0)
+  })
+})
+
+describe('regresiones: contratos y dependencias', () => {
+  test('detecta autociclo y ciclo indirecto, pero permite un diamante acíclico', () => {
+    const ids = ['PLAN-2026-001', 'PLAN-2026-002', 'PLAN-2026-003', 'PLAN-2026-004']
+    for (const [edges, cyclic] of [
+      [[[0], [], [], []], true], [[[1], [2], [0], []], true], [[[1, 2], [3], [3], []], false],
+    ]) {
+      const files = Object.fromEntries(ids.map((id, i) => [planFile(id), plan(id, { depends_on: `[${edges[i].map((n) => ids[n]).join(', ')}]` })]))
+      const result = run('rem-doctor.mjs', hub(files), '--no-git', '--strict')
+      assert.equal(result.code, cyclic ? 1 : 0, result.out)
+      if (cyclic) assert.match(result.out, /\[regla 6b\].*ciclo/)
+    }
+  })
+  test('dependencia abandonada no satisface una entrega; eliminarla con decisión permite continuar', () => {
+    const id = 'PLAN-2026-002'
+    const root = hub({
+      [planFile('PLAN-2026-001')]: closedPlan('PLAN-2026-001', day(-5), day(-3), { status: 'Abandonado' }),
+      [planFile(id)]: closedPlan(id, day(-2), day(-1), { depends_on: '[PLAN-2026-001]' }),
+    })
+    const result = run('rem-doctor.mjs', root, '--no-git')
+    assert.equal(result.code, 1, result.out)
+    assert.match(result.out, /\[regla 20\].*Abandonado/)
+    writeFileSync(join(root, planFile(id)), closedPlan(id, day(-2), day(-1)) + '\nDecisión: se retiró la dependencia; el contrato se cubrió por otra vía.\n')
+    assert.equal(run('rem-doctor.mjs', root, '--no-git', '--strict').code, 0)
+  })
+  test('contrato desplegado u observado se puede consumir; dependencia activa avisa', () => {
+    for (const status of ['Activo', 'Desplegado', 'Observando', 'Cerrado']) {
+      const root = hub({
+        [planFile('PLAN-2026-001')]: plan('PLAN-2026-001', {
+          status, owner: 'ana', started: day(-5), ...(status === 'Cerrado' ? { closed: day(-3) } : {}),
+        }),
+        [planFile('PLAN-2026-002')]: closedPlan('PLAN-2026-002', day(-2), day(-1), { depends_on: '[PLAN-2026-001]' }),
+      })
+      const result = run('rem-doctor.mjs', root, '--no-git', '--strict')
+      assert.equal(result.code, status === 'Activo' ? 1 : 0, result.out)
+      if (status === 'Activo') assert.match(result.out, /\[regla 20\]/)
+    }
+  })
+  test('IDs de megaplán configurados conservan referencias bidireccionales', () => {
+    const megaId = 'MEGA-PMU-001'
+    const id = `${megaId}-P1`
+    const root = hub({
+      [`megaplanes/${megaId}-x.md`]: mega([id], { id: megaId }),
+      [planFile(id)]: plan(id),
+    }, (c) => {
+      c.types.mega.idPattern = '^MEGA-PMU-\\d{3}$'
+      c.types.plan.idPattern = '^MEGA-PMU-\\d{3}-P\\d+$'
+      return c
+    })
+    assert.equal(run('rem-doctor.mjs', root, '--no-git', '--strict').code, 0)
+    const status = run('rem-status.mjs', root, megaId)
+    assert.match(status.out, /MEGA-PMU-001/)
+    assert.doesNotMatch(status.out, /Atención activa por persona/, 'se aplicó el filtro de megaplán personalizado')
+    writeFileSync(join(root, planFile(id)), plan(id, { megaplan: 'null' }))
+    assert.match(run('rem-doctor.mjs', root, '--no-git').out, /\[regla 12\]/)
+  })
+})
+
+function fixtureGit(root, ...args) {
+  const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' })
+  assert.equal(result.status, 0, result.stderr)
+  return result.stdout
+}
+function stagedHub(tweak = (c) => c) {
+  const root = hub({ 'architecture-decisions/ADR-0001-a.md': adr() }, (c) => {
+    c.generated.index = 'ci'
+    c.repos = {}
+    c.agentBlock = null
+    return tweak(c)
+  })
+  cpSync(join(REM, 'scripts'), join(root, 'scripts'), { recursive: true })
+  fixtureGit(root, 'init', '-q')
+  fixtureGit(root, 'add', '--all')
+  return root
+}
+function unchangedAfterHook(root, expected) {
+  const before = [readFileSync(join(root, '.git', 'index')), fixtureGit(root, 'diff', '--binary'), fixtureGit(root, 'diff', '--cached', '--binary')]
+  const temporaries = readdirSync(tmpdir()).filter((name) => name.startsWith('rem-staged-')).sort()
+  const result = run('rem-precommit.mjs', root)
+  assert.equal(result.code, expected, result.out)
+  assert.deepEqual(readFileSync(join(root, '.git', 'index')), before[0], 'el índice cambió')
+  assert.equal(fixtureGit(root, 'diff', '--binary'), before[1], 'el working tree cambió')
+  assert.equal(fixtureGit(root, 'diff', '--cached', '--binary'), before[2], 'el staging cambió')
+  assert.deepEqual(readdirSync(tmpdir()).filter((name) => name.startsWith('rem-staged-')).sort(), temporaries, 'snapshot sin limpiar')
+  return result
+}
+
+describe('regresiones: pre-commit valida exactamente el índice', () => {
+  test('rechaza documento staged inválido aunque el working tree lo corrija, y no ejecuta scripts staged', () => {
+    const root = stagedHub()
+    const file = 'architecture-decisions/ADR-0001-a.md'
+    writeFileSync(join(root, file), '# Sin frontmatter\n')
+    mkdirSync(join(root, 'scripts'), { recursive: true })
+    writeFileSync(join(root, 'scripts', 'rem-doctor.mjs'), 'process.exit(0)\n')
+    fixtureGit(root, 'add', '--all')
+    writeFileSync(join(root, file), adr())
+    assert.match(unchangedAfterHook(root, 1).out, /sin front-matter/)
+  })
+  test('acepta staged válido aunque haya documento y config inválidos sin stage', () => {
+    const root = stagedHub()
+    writeFileSync(join(root, 'architecture-decisions', 'ADR-0001-a.md'), '# En edición\n')
+    writeFileSync(join(root, 'architecture-decisions', 'ADR-0002-untracked.md'), '# Borrador no preparado\n')
+    writeFileSync(join(root, 'rem.config.json'), '{invalid')
+    unchangedAfterHook(root, 0)
+  })
+  test('config staged inválido no puede ocultarse con una corrección sin stage', () => {
+    const root = stagedHub()
+    const config = readFileSync(join(root, 'rem.config.json'), 'utf8')
+    writeFileSync(join(root, 'rem.config.json'), '{invalid')
+    fixtureGit(root, 'add', '--', 'rem.config.json')
+    writeFileSync(join(root, 'rem.config.json'), config)
+    assert.match(unchangedAfterHook(root, 1).out, /configuración REM válida en el índice/)
+  })
+  test('falta de config staged y archivo interno sin stage no se rescatan del working tree', () => {
+    const root = stagedHub()
+    cpSync(join(root, 'rem.config.json'), join(root, 'rem.config.example.json'))
+    fixtureGit(root, 'add', '--', 'rem.config.example.json')
+    fixtureGit(root, 'rm', '--cached', '--', 'rem.config.json')
+    assert.match(unchangedAfterHook(root, 1).out, /falta rem.config.json en el índice/)
+    fixtureGit(root, 'add', '--', 'rem.config.json')
+    writeFileSync(join(root, 'architecture-decisions', 'ADR-0001-a.md'), adr() + '\n[pendiente](../solo local.txt)\n[enlace](../solo%20local.txt)\n')
+    fixtureGit(root, 'add', '--', 'architecture-decisions/ADR-0001-a.md')
+    writeFileSync(join(root, 'solo local.txt'), 'No está en el commit\n')
+    assert.match(unchangedAfterHook(root, 1).out, /enlace roto/)
+    fixtureGit(root, 'add', '--', 'solo local.txt')
+    unchangedAfterHook(root, 0)
+  })
+  test('escritor local comprueba vistas y nunca autostagea su regeneración', () => {
+    const root = stagedHub((c) => { c.generated.index = 'local'; return c })
+    assert.match(unchangedAfterHook(root, 1).out, /Regenera/)
+    assert.equal(run('rem-index.mjs', root).code, 0)
+    unchangedAfterHook(root, 1) // Todavía no se preparó la vista generada.
+    fixtureGit(root, 'add', '--all')
+    unchangedAfterHook(root, 0)
+  })
+  test('rutas de documentos absolutas internas se remapean; externas se rechazan', () => {
+    const root = stagedHub()
+    const config = JSON.parse(readFileSync(join(root, 'rem.config.json'), 'utf8'))
+    config.types.adr.dir = join(root, 'architecture-decisions')
+    writeFileSync(join(root, 'rem.config.json'), JSON.stringify(config))
+    fixtureGit(root, 'add', '--all')
+    unchangedAfterHook(root, 0)
+    config.types.adr.dir = dirname(root)
+    writeFileSync(join(root, 'rem.config.json'), JSON.stringify(config))
+    fixtureGit(root, 'add', '--all')
+    assert.match(unchangedAfterHook(root, 1).out, /fuera del hub/)
+  })
+  test('enlaces externos relativos mantienen contexto; absolutos internos siguen exigiendo stage', () => {
+    const root = stagedHub()
+    const external = hub()
+    const link = relative(root, join(external, 'README.md')).replaceAll('\\', '/')
+    const inside = join(root, 'interno.txt')
+    writeFileSync(inside, 'Contenido local\n')
+    writeFileSync(join(root, 'architecture-decisions', 'ADR-0001-a.md'), adr() + `\n[externo](../${link})\n[interno](${inside.replaceAll('\\', '/')})\n`)
+    fixtureGit(root, 'add', '--all')
+    unchangedAfterHook(root, 0)
+    fixtureGit(root, 'rm', '--cached', '--', 'interno.txt')
+    assert.match(unchangedAfterHook(root, 1).out, /enlace roto.*interno/)
+  })
+  test('nombres con espacios y saltos de línea se leen sin interpretar comandos', () => {
+    const root = stagedHub()
+    const names = ['archivo con espacios.txt', ...(process.platform === 'win32' ? [] : ['archivo\npartido.txt'])]
+    for (const name of names) writeFileSync(join(root, name), 'Contenido\n')
+    fixtureGit(root, 'add', '--all')
+    unchangedAfterHook(root, 0)
+  })
+})
+
+describe('regresiones: avisos semanales', () => {
+  const sh = spawnSync('sh', ['-c', 'true'])
+  const skip = sh.error ? 'sh no disponible' : false
+  test('el bloque real de CI falla por avisos en schedule y no bloquea push por ellos', { skip }, () => {
+    const root = hub({ 'architecture-decisions/ADR-0001-a.md': adr('ADR-0001', { status: 'Proposed', date: day(-30) }) }, (c) => {
+      c.repos = {}; c.agentBlock = null; return c
+    })
+    cpSync(join(REM, 'scripts'), join(root, 'scripts'), { recursive: true })
+    const workflow = readFileSync(join(REM, 'templates', 'ci', 'rem.yml'), 'utf8')
+    const block = /id: doctor\r?\n\s+run: \|\r?\n([\s\S]*?)(?=\r?\n      - name:)/.exec(workflow)?.[1]
+    assert.ok(block, 'bloque ejecutable del doctor en CI')
+    const script = block.split(/\r?\n/).map((line) => line.replace(/^          /, '')).join('\n')
+    for (const [event, code] of [['push', 0], ['schedule', 1]]) {
+      const result = spawnSync('sh', ['-c', script], { cwd: root, encoding: 'utf8', env: { ...process.env, GITHUB_EVENT_NAME: event, GITHUB_OUTPUT: join(root, 'outputs.txt') } })
+      assert.equal(result.status, code, result.stdout + result.stderr)
+      assert.match(readFileSync(join(root, 'doctor.txt'), 'utf8'), /\[regla 2\]/)
+    }
+    assert.doesNotMatch(workflow, /\$\{\{ steps\.doctor\.outputs\.report \}\}/, 'el informe se trata como datos, no como código JS')
   })
 })

@@ -12,7 +12,7 @@ Las palabras **DEBE**, **NO DEBE**, **DEBERÍA**, **PUEDE** y **RECOMENDADO** ex
 
 REM es un método de ingeniería para desarrollar y operar software cuando humanos, agentes de IA y automatización determinista participan juntos en el ciclo de entrega.
 
-REM optimiza cinco cosas:
+REM orienta su diseño a cinco objetivos:
 
 1. claridad de intención;
 2. velocidad de aprendizaje;
@@ -31,7 +31,7 @@ Un uso conforme de REM DEBE conservar estas propiedades:
 1. **Escalamiento proporcional:** el coste documental/procesal aumenta con riesgo, incertidumbre y permanencia, no automáticamente con tamaño.
 2. **Trabajo explícito cuando importa:** el trabajo no trivial tiene objetivo, alcance y criterio de cierre comprensibles.
 3. **Ciclo de evidencia:** investigar, decidir, implementar y verificar son actividades distinguibles aunque se ejecuten en minutos.
-4. **WIP controlado:** existe una política explícita que limita trabajo iniciado pero no terminado.
+4. **WIP controlado:** se cuenta el trabajo iniciado y no terminado, y una política explícita limita la atención activa y regula la admisión de trabajo nuevo.
 5. **Autoridad humana:** un agente no acepta riesgo residual ni amplía por sí mismo el alcance material o los permisos que recibió.
 6. **Verificación proporcional al riesgo:** la evidencia requerida está definida antes de declarar terminado el trabajo.
 7. **Historia durable:** las decisiones que sobreviven al diff quedan registradas a un nivel proporcional.
@@ -84,8 +84,9 @@ Un agente NO DEBE, sin autoridad humana explícita:
 - redefinir el objetivo del Plan;
 - convertir una ramificación en un nuevo compromiso de producto;
 - modificar la constitución del proyecto;
-- realizar una acción irreversible de producción que exceda su autorización;
-- ocultar evidencia fallida para poder cerrar trabajo.
+- realizar una acción irreversible de producción que exceda su autorización.
+
+Ningún participante DEBE ocultar, falsificar o eliminar evidencia fallida para aparentar un cierre. La autorización humana no crea una excepción a esta obligación. Aceptar un riesgo residual requiere conservar la evidencia y declarar la decisión; no convierte un criterio incumplido en cumplido.
 
 ### 3.3 Automatización determinista
 
@@ -219,7 +220,7 @@ No todos los trabajos recorren todos los estados.
 
 - Un cambio que no necesita despliegue puede cerrar después de `Verificando`.
 - `Observando` solo es necesario cuando la evidencia real llega después del despliegue.
-- `Pausado` DEBE registrar el motivo.
+- `Pausado` DEBE registrar fecha (`paused`) y motivo (`pause_reason`); la condición de reanudación (`resume_when`) se añade cuando se conoce.
 - `Abandonado` es un resultado legítimo y DEBE registrar por qué se dejó.
 
 ### 6.1 Definiciones
@@ -265,7 +266,7 @@ REM establece como default:
 
 > **Máximo un Plan `Activo` o `Verificando` por humano responsable.**
 
-Una adopción PUEDE cambiar el número, pero DEBE declarar el límite.
+Este es el límite de **atención activa**, no la definición de todo el WIP. El **WIP total** incluye todo Plan que ya inició y no está `Cerrado` ni `Abandonado`, también si está `Pausado`, `Desplegado` u `Observando`. Una adopción PUEDE cambiar el límite de atención, pero DEBE declararlo, revisar el WIP total antes de admitir más trabajo y explicitar cómo atiende la observación posterior al despliegue. Pausar un Plan libera atención; no borra su trabajo pendiente ni reinicia su edad.
 
 ### 7.2 Paralelismo de agentes
 
@@ -284,9 +285,9 @@ Un incidente o riesgo superior PUEDE preemptar trabajo activo.
 
 El trabajo desplazado pasa a `Pausado` con:
 
-- fecha;
-- motivo;
-- condición de reanudación cuando sea conocida.
+- fecha en `paused`;
+- motivo en `pause_reason`;
+- condición de reanudación en `resume_when` cuando sea conocida.
 
 ### 7.4 Ramificaciones
 
@@ -306,7 +307,7 @@ Cuando varias personas, cada una con sus agentes, avanzan el mismo Megaplán:
 - las vistas que resumen varios documentos (índice, tabla de planes del maestro) NO DEBEN mantenerse a mano: se generan desde el front-matter y tienen un único escritor;
 - tomar un Plan DEBE ser un cambio pequeño y publicado de inmediato (responsable + estado), para que dos personas no tomen el mismo;
 - cada Plan DEBERÍA declarar su zona de cambio y su contrato de entrega, y cambiar un contrato publicado DEBERÍA registrarse como DEC enlazada a los Plans que lo consumen;
-- el límite de WIP sigue siendo por humano.
+- el límite de atención activa sigue siendo por humano y el WIP total permanece visible.
 
 El protocolo completo está en `docs/TEAM.md`.
 
@@ -404,13 +405,13 @@ REM define cuatro niveles de referencia:
 - **V2 — seguridad/datos/fronteras**
 - **V3 — irreversible/crítico**
 
-Los requisitos están en `docs/VERIFICATION.md`.
+Los mínimos de cada nivel están en `docs/VERIFICATION.md` y prevalecen sobre recomendaciones generales o ejemplos. La Constitución precisa riesgos, comandos y evidencias equivalentes; PUEDE exigir más evidencia, pero NO DEBE omitir un mínimo aplicable ni bajar el nivel para poder cerrar. Una reclasificación legítima debe registrar el cambio de alcance o de riesgo que la justifica y conservar los resultados anteriores.
 
 La regla general es:
 
 > **Una prueba útil debe distinguir el sistema que queremos del sistema incorrecto que tememos.**
 
-Cuando sea práctico, una prueba nueva DEBERÍA demostrar contrafactualmente su capacidad de detectar el fallo mediante uno de estos mecanismos:
+En V1, una prueba nueva DEBERÍA demostrar contrafactualmente su capacidad de detectar el fallo cuando sea práctico; en V2 y V3 esa evidencia es un mínimo obligatorio. Se puede obtener mediante uno de estos mecanismos:
 
 - ejecutarla contra el árbol anterior;
 - revertir la corrección;
@@ -447,7 +448,9 @@ REM no prescribe una política universal sobre trailers o atribución a herramie
 
 La Constitución DEBE declarar la política de changelog del proyecto: `required`, `observable` o `deferred`.
 
-El default de REM es `required`: todo commit que cambia código lleva su entrada de changelog, en lenguaje de usuario y en el mismo commit, y un hook lo comprueba. Los cambios internos van en una sección `Interno`. La experiencia que dio origen a REM es concluyente: cuando la entrada era opcional para lo "menor", 99 de 117 cambios quedaron sin ningún registro, porque cada uno era individualmente menor.
+El default de REM es `required`: todo commit que cambia código lleva su entrada de changelog, en lenguaje de usuario y en el mismo commit, y un hook lo comprueba. Los cambios internos van en una sección `Interno`.
+
+La elección se motivó en una observación interna del proyecto de origen: su autor reportó 99 de 117 cambios sin registro documental adicional bajo una política que hacía opcional registrar cambios menores. No se publica aquí el conjunto de cambios, su selección ni un procedimiento de recuento reproducible. La cifra describe ese antecedente declarado; no demuestra causalidad, una tasa generalizable ni superioridad de la política `required`. Cada adopción evalúa su coste y utilidad en su contexto (véase `docs/EVALUATION.md`).
 
 `observable` exige entrada solo para cambios observables por usuarios. `deferred` es una excepción declarada (por ejemplo, un hub que todavía no instaló spokes en los repos de código): el registro por defecto pasa a ser el commit y el timeline se construye desde los commits.
 
@@ -497,7 +500,7 @@ Un documento concreto solo debe existir si responde una pregunta futura que los 
 
 Una adopción conforme DEBE poder obtener como mínimo:
 
-1. **WIP:** trabajo iniciado y no terminado;
+1. **WIP total:** trabajo iniciado y no terminado, separado de la atención activa limitada por la política;
 2. **Throughput:** unidades cerradas por periodo;
 3. **Work Item Age:** edad del trabajo aún abierto;
 4. **Cycle Time:** tiempo desde inicio hasta cierre.
@@ -552,7 +555,7 @@ Una regla del método que genera avisos permanentes sin capacidad de corregirse 
 
 ## 17. Versionado de REM
 
-Cambios compatibles de aclaración: `1.0.x`.
+Cambios compatibles de aclaración: incremento de parche dentro de la versión menor vigente (por ejemplo, `1.1.x` para la línea 1.1).
 
 Nuevas capacidades sin romper el kernel: `1.x`.
 
@@ -574,7 +577,9 @@ Un proyecto puede decir **“usa REM 1.1”** cuando:
 - puede observar trabajo terminado;
 - mide al menos las cuatro métricas mínimas;
 - no convierte todos los cambios en el artefacto más pesado;
-- y lo anterior se puede comprobar: `rem-doctor --adoption` sale sin errores y corre en CI (ver `docs/BOOTSTRAP.md`), y toda excepción está declarada en su Constitución.
+- la instalación y sus invariantes comprobables pasan `rem-doctor --adoption` en CI (ver `docs/BOOTSTRAP.md`), y toda excepción está declarada en su Constitución.
+
+El doctor comprueba invariantes representadas en archivos; no sustituye la revisión de la evidencia, la autoridad humana ni la observación del resultado. La conformidad de la instalación, la aplicación del método y su eficacia son afirmaciones distintas. `docs/EVALUATION.md` explica cómo sustentarlas y cómo evaluar costes y resultados sin atribuirles una causalidad no demostrada.
 
 El objetivo de REM no es producir más proceso.
 

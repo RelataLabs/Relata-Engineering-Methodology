@@ -29,7 +29,7 @@ export const ACTIVE_STATES = new Set(['Activo', 'Verificando'])
 /** Estados que cierran un Plan o un Megaplán. */
 export const FINAL_STATES = new Set(['Cerrado', 'Abandonado'])
 /** Estados en los que una dependencia ya no bloquea a quien depende de ella. */
-export const DEPENDENCY_DONE = new Set(['Desplegado', 'Observando', 'Cerrado', 'Abandonado'])
+export const DEPENDENCY_DONE = new Set(['Desplegado', 'Observando', 'Cerrado'])
 
 // --- argumentos -------------------------------------------------------------
 
@@ -70,7 +70,37 @@ export function loadConfig(root, argv = process.argv) {
   } catch (e) {
     return { config: null, path, error: `${toPosix(path)} no es JSON válido: ${e.message}` }
   }
-  return { config: normalizeConfig(raw), path, error: null }
+  try {
+    const config = normalizeConfig(raw)
+    const sourceRoot = arg('--source-root', argv)
+    if (sourceRoot) {
+      // Un snapshot conserva las rutas semánticas del config preparado para commit.
+      // Las raíces de documentos deben pertenecer a ese commit, no a otro checkout.
+      const source = resolve(sourceRoot)
+      const internal = (value, label) => {
+        const target = resolve(source, value)
+        if (!isWithin(source, target)) throw new Error(`${label} está fuera del hub; no se puede validar desde el índice`)
+        return relative(source, target) || '.'
+      }
+      for (const t of Object.values(config.types)) {
+        if (t.dir) t.dir = internal(t.dir, 'types.dir')
+        if (t.template) t.template = isWithin(source, resolve(source, t.template))
+          ? internal(t.template, 'template') : resolve(source, t.template)
+      }
+      if (config.workRoots) config.workRoots = config.workRoots.map((p) => internal(p, 'workRoots'))
+      config.generated.readme = internal(config.generated.readme, 'generated.readme')
+      config.required = config.required.map((p) => internal(p, 'required'))
+      for (const repo of Object.values(config.repos)) {
+        const target = resolve(source, repo.path)
+        repo.path = isWithin(source, target) ? resolve(root, relative(source, target)) : target
+      }
+      if (config.ci.workflow) config.ci.workflow = isWithin(source, resolve(source, config.ci.workflow))
+        ? internal(config.ci.workflow, 'ci.workflow') : resolve(source, config.ci.workflow)
+    }
+    return { config, path, error: null }
+  } catch (error) {
+    return { config: null, path, error: error.message }
+  }
 }
 
 /** Completa valores por defecto y marca el modo legado (config REM 1.0). */
@@ -316,15 +346,28 @@ export function today() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export function daysSince(date, now = new Date()) {
-  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(String(date))) return null
+/** Fecha de calendario real, sin la normalización silenciosa de Date (30 de febrero). */
+export function parseDate(date) {
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
   const d = new Date(`${date}T00:00:00Z`)
-  if (Number.isNaN(d.getTime())) return null
+  if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== date) return null
+  return d
+}
+
+export function daysSince(date, now = new Date()) {
+  const d = parseDate(date)
+  if (!d || !(now instanceof Date) || Number.isNaN(now.getTime())) return null
   return Math.floor((now - d) / 86_400_000)
 }
 
 export function toPosix(p) {
   return p.split(sep).join('/')
+}
+
+/** Inclusión estructural, no un startsWith que confunda /hub con /hub-otro. */
+export function isWithin(root, path) {
+  const rel = relative(resolve(root), resolve(path))
+  return rel === '' || (!/^(?:[A-Za-z]:|[\\/])/.test(rel) && rel !== '..' && !rel.startsWith(`..${sep}`))
 }
 
 export function eol(s) {

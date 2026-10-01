@@ -5,14 +5,14 @@ REM debe adaptarse sin convertirse en ceremonia, y sin quedarse a medias.
 ## Lo que puedes cambiar
 
 - nombres de carpetas (declarándolos en `rem.config.json`);
-- nombres de estados (declarándolos por tipo en el config);
-- WIP limit;
+- vocabularios de estados documentales declarados por tipo en el config; los Plans y Megaplanes conservan los estados canónicos de METHOD §6 para que funcionen las reglas y métricas del tooling;
+- límite de atención activa y política de admisión, manteniendo visible el WIP total;
 - taxonomía de prioridades y política de selección;
 - política de Git, de review y de atribución de IA;
 - formato y política de changelog (`required`, `observable`, `deferred`);
 - campos adicionales de front-matter;
 - herramientas de agentes;
-- umbrales de verificación y del doctor;
+- umbrales que amplíen la verificación y controles del doctor, conservando los mínimos del nivel aplicable;
 - cadencias.
 
 ## Lo que NO es tailoring
@@ -50,7 +50,7 @@ cambiaron de sitio, de la plantilla o del método a la **Constitución** del pro
 |---|---|---|
 | Clean Architecture y SOLID en todos los repos, sección "no se borra" de cada plan | Constitución, "Arquitectura por repositorio"; cada plan la cita en "Restricciones heredadas" | una fila por repo con SU patrón (Atomic Design, Clean, monolito modular, puertos y adaptadores…) |
 | Boy Scout sin límite | METHOD §9.1 (acotado por familia causal) | se mantiene o se amplía en la Constitución |
-| Una prueba nueva falla contra el árbol anterior | VERIFICATION, contrafactual en V2/V3 | la Constitución dice desde qué nivel es obligatorio |
+| Una prueba nueva falla contra el árbol anterior | VERIFICATION, contrafactual obligatorio en V2/V3 | la Constitución elige la técnica equivalente y puede exigirlo también en V1; no elimina los mínimos V2/V3 |
 | El éxito se lee del código de salida | Constitución, "Verificación" | igual |
 | Cero estimaciones en tiempo humano | METHOD §4.2 | igual |
 | Cada commit con cuerpo y entrada de CHANGELOG | `changelog.policy` + bloque CONFIG de `hooks/commit-msg` | `required` / `observable` / `deferred`, y cuerpo obligatorio o no |
@@ -63,16 +63,16 @@ todo el sistema y otro multirepo con una arquitectura distinta por repo.
 
 ## Equipo de una persona
 
-- WIP 1;
+- atención activa de un Plan; seguimiento separado del WIP total;
 - sin PR obligatorio;
-- `generated.index = "local"` (el hook regenera las vistas);
+- `generated.index = "local"` (se ejecuta `rem-index` y se preparan las vistas; el hook comprueba el contenido staged sin añadir archivos);
 - agente como implementador/revisor adversarial;
 - CI como segunda línea;
 - V3 exige pausa consciente y, si el riesgo lo justifica, revisor humano externo.
 
 ## Equipo 2–5
 
-- WIP por humano = 1;
+- atención activa por humano = 1; WIP total visible;
 - `generated.index = "ci"` y el protocolo de [TEAM.md](TEAM.md);
 - un coordinador por megaplán;
 - review cruzado solo V2/V3 o cambios estructurales;

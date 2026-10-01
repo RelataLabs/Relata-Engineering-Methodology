@@ -10,7 +10,7 @@
 
 Su clasificación técnica es **framework configurable de proceso de ingeniería de software y especificación de método** (*configurable software engineering process framework and method specification*). `Relata Engineering Methodology` es el nombre paraguas del proyecto; la distinción formal entre metodología, método, framework y proceso configurado está documentada en [docs/CLASSIFICATION.md](docs/CLASSIFICATION.md).
 
-No es Scrum sin ceremonias, ni RUP reducido, ni Jira en Markdown. REM parte de una premisa distinta:
+REM organiza la colaboración entre personas, agentes y automatización a partir de esta premisa:
 
 > **Generar código se ha abaratado; entender el problema, decidir bien, verificar y asumir responsabilidad siguen siendo escasos.**
 
@@ -47,7 +47,7 @@ CERRAR / APRENDER
 
 1. **El coste del proceso es proporcional al riesgo, la incertidumbre y la permanencia de la decisión.**
 2. **La intención precede a la implementación en trabajo no trivial.**
-3. **La atención humana es el WIP realmente escaso.**
+3. **La atención humana es limitada; el trabajo pendiente sigue siendo visible aunque deje de consumir atención activa.**
 4. **La evidencia pesa más que el estado declarado.**
 5. **Las dependencias y el riesgo ordenan el trabajo; las estimaciones de horas no son requisito.**
 6. **Un agente puede producir artefactos, pero no aceptar riesgo ni ampliar autoridad por sí mismo.**
@@ -83,7 +83,7 @@ Lo anterior es sobre cómo se **usa** REM. Para **instalarlo**, una adopción ex
 - el trabajo vivo con dependencias en un Megaplán desde el primer día, y la documentación existente con destino;
 - que `rem-doctor --adoption` salga sin errores, y que lo que falte esté declarado como excepción con su condición de salida.
 
-Instalar completo y usar en proporción no se contradicen: una carpeta vacía no cuesta nada; un tipo que falta hace que su primer documento se escriba en otro lado o no se escriba.
+La instalación mantiene disponibles los tipos y controles; cada cambio utiliza únicamente los artefactos que necesita. El coste de instalar y mantener esa estructura también se evalúa, junto con su utilidad para conservar decisiones y evidencias.
 
 ## Arquitectura documental
 
@@ -101,6 +101,8 @@ docs/
   MEGAPLANS.md            guía de megaplanes y planes (se copia a cada adopción)
   TEAM.md                 varias personas con sus agentes en el mismo megaplán
   CLASSIFICATION.md       clasificación formal: methodology / method / process framework
+  EVALUATION.md           alcance de las afirmaciones y protocolo de evaluación
+  EXAMPLE-WALKTHROUGH.md  recorrido ilustrativo completo, sin resultados empíricos
   FLOW.md                 selección, estados y WIP
   VERIFICATION.md         niveles de evidencia
   METRICS.md              métricas de flujo y outcome
@@ -125,6 +127,8 @@ scripts/
   rem-install.mjs         activa los hooks en un clon
   rem-precommit.mjs       lo que ejecuta el hook pre-commit
   lib/rem.mjs             parser y config compartidos
+  lib/flow.mjs            validación de fechas y estados de flujo
+  lib/staged.mjs          lectura aislada del árbol preparado para commit
 
 hooks/
   commit-msg              asunto, cuerpo, changelog y (opcional) atribución de IA
@@ -179,6 +183,10 @@ entrega relevante que necesita evidencia durable
   → IMP
 ```
 
+## Evaluación y ejemplo
+
+La especificación define cómo trabajar; las pruebas del tooling comprueban comportamientos de las herramientas. Para distinguir esas afirmaciones de la adopción efectiva y de la eficacia del método, consulta [alcance y evaluación](docs/EVALUATION.md). El [recorrido ilustrativo](docs/EXAMPLE-WALKTHROUGH.md) muestra un objetivo desde su selección hasta el cierre, con criterios, evidencia esperada y métricas sintéticas identificadas como tales. Los [fundamentos e influencias](REFERENCES.md) enlazan las fuentes primarias y delimitan qué aporta cada una.
+
 ## Licencias
 
 REM se publica con un modelo de licencia dual según el tipo de material:
@@ -197,7 +205,7 @@ Atribución sugerida para documentación o adaptaciones:
 ## Estado de esta especificación
 
 - **Versión:** 1.1.0
-- **Estado:** Stable
+- **Estado de la versión publicada:** Stable; los cambios aún no publicados se registran en `CHANGELOG.md` bajo Unreleased.
 - **Fecha:** 2026-09-25
 - **Idioma normativo:** español
 - **Clasificación:** configurable software engineering process framework + method specification
