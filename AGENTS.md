@@ -105,7 +105,11 @@ Una suite verde no es suficiente si no detectaría la regresión objetivo.
 
 En V2/V3 busca evidencia contrafactual: árbol anterior, reversión, mutación o técnica equivalente.
 
+En V2/V3 esa evidencia es un mínimo obligatorio; la Constitución puede concretarlo o ampliarlo, no eliminarlo para cerrar. Ninguna autorización permite ocultar o falsificar resultados fallidos. Conserva la evidencia original si se acepta un riesgo residual o se reclasifica legítimamente el trabajo.
+
 Declara explícitamente lo que NO se pudo verificar.
+
+Antes de hacer commit, comprueba lo que está preparado en el índice. El hook valida ese contenido sin incorporar cambios ajenos. Si `generated.index = "local"`, ejecuta `node scripts/rem-index.mjs`, revisa sus vistas y prepara sus archivos; el hook comprueba que estén actualizados, no los añade automáticamente.
 
 ## Escritura de documentos
 

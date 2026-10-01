@@ -68,7 +68,7 @@ Quién las regenera lo declara el config (`generated.index`):
 - **`ci`** (equipos): solo el workflow de CI, en la rama principal, después de cada push. Nadie
   más las commitea, así que cinco personas empujando a la vez no chocan en el README. Si la rama
   principal está protegida, el bot de CI necesita permiso para empujar, o se usa `local`.
-- **`local`** (una persona): el hook `pre-commit` las regenera y las añade a cada commit.
+- **`local`** (una persona): el responsable ejecuta `node scripts/rem-index.mjs`, revisa y prepara las vistas. El hook `pre-commit` comprueba el árbol staged y rechaza vistas desactualizadas sin modificar el índice ni el working tree.
 
 En modo `ci` la vista puede ir un push por detrás de la verdad durante un minuto. La verdad
 siempre es el front-matter de cada documento; `rem-status` lo lee directamente.
@@ -87,7 +87,7 @@ siempre es el front-matter de cada documento; `rem-status` lo lee directamente.
 
 - `depends_on: [ID]` en el front-matter del plan: lo que tiene que entregar otro plan antes.
   `rem-status` marca "espera …" y el doctor avisa si un plan se entrega con dependencias abiertas
-  (regla 20).
+  (regla 20). Un Plan abandonado no satisface una dependencia; si esta deja de ser necesaria, se revisa el contrato y se registra la decisión antes de modificarla.
 - La sección **"Contrato de entrega"** de cada plan dice qué **produce** (un endpoint, un evento,
   una tabla, un componente — con su forma) y qué **consume** y de quién. Es lo que permite que dos
   planes avancen en paralelo: cada uno trabaja contra el contrato, no contra la implementación
@@ -157,11 +157,11 @@ otro la semana que viene.
 | Dos documentos con el mismo ID (regla 15) | renumera el más reciente (`rem-new` da el siguiente libre) |
 | Aviso de zona solapada (regla 19) | las dos personas acuerdan el límite en sus "Contrato de entrega" o secuencian |
 | Tu cambio rompe el contrato de otro plan | DEC con `related` a ese plan, y avisar a su responsable antes de mergear |
-| Un plan activo sin movimiento | el coordinador pregunta; si no hay respuesta, lo pasa a `Pausado` con motivo en la bitácora |
+| Un plan activo sin movimiento | el coordinador pregunta; si corresponde pausarlo, registra `paused`, `pause_reason` y la decisión en la bitácora |
 
 ## 12. Límites que no cambian
 
-- **WIP por persona**, no por agente. Cinco agentes no son cinco revisores (METHOD §7.2).
+- **Atención activa limitada por persona**, no por agente, y WIP total visible. Cinco agentes no son cinco revisores (METHOD §7.2).
 - El coordinador es un humano. Un agente puede preparar la bitácora; no decide qué planes nacen.
 - Nada de esto sustituye hablar: el protocolo hace visibles los choques a tiempo; resolverlos
   sigue siendo cosa de personas.

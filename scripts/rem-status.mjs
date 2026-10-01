@@ -40,13 +40,20 @@ import {
 const ROOT = resolveRoot(import.meta.url)
 const onlyOwner = arg('--owner')
 const windowDays = Number(arg('--days') ?? 7)
-const onlyMega = process.argv.slice(2).find((a) => /^MEGA-\d{4}-\d{3}$/.test(a))
 
 const { config, error } = loadConfig(ROOT)
 if (!config) {
   console.error(`✗ ${error}`)
   process.exit(1)
 }
+const valued = new Set(['--root', '--config', '--source-root', '--owner', '--days'])
+const positional = []
+for (let i = 2; i < process.argv.length; i++) {
+  if (valued.has(process.argv[i])) i++
+  else if (!process.argv[i].startsWith('--')) positional.push(process.argv[i])
+}
+const megaPattern = new RegExp(config.types.mega?.idPattern ?? '^MEGA-\\d{4}-\\d{3}$')
+const onlyMega = positional.find((id) => megaPattern.test(id))
 
 const docs = loadDocs(ROOT, config).filter((d) => d.fm?.id)
 const byId = new Map(docs.map((d) => [d.fm.id, d]))
@@ -114,14 +121,14 @@ if (loose.length && !onlyMega) {
   console.log('')
 }
 
-// WIP y huecos: planes activos por persona y planes libres que ya no están bloqueados.
+// Atención y huecos; el WIP total iniciado se presenta por separado en rem-flow.
 if (!onlyMega) {
   const byOwner = new Map()
   for (const p of plans.filter((x) => ACTIVE_STATES.has(x.fm.status))) {
     const o = p.fm.owner ?? '<sin owner>'
     byOwner.set(o, [...(byOwner.get(o) ?? []), p.fm.id])
   }
-  console.log('## WIP por persona')
+  console.log('## Atención activa por persona (Activo/Verificando)')
   if (!byOwner.size) console.log('  (nadie tiene un plan activo)')
   for (const [o, ids] of byOwner) {
     const over = ids.length > config.wip.maxActiveOrVerifyingPerOwner ? '  ⚠ sobre el límite' : ''
@@ -138,7 +145,10 @@ if (!onlyMega) {
 // Novedades: decisiones, incidentes y auditorías recientes que pueden cambiar lo que uno hace.
 const recent = docs
   .filter((d) => ['dec', 'adr', 'incident', 'audit'].includes(d.fm.type))
-  .filter((d) => (daysSince(d.fm.date) ?? Infinity) <= windowDays)
+  .filter((d) => {
+    const age = daysSince(d.fm.date)
+    return age !== null && age >= 0 && age < windowDays
+  })
   .filter((d) => !onlyMega || asList(d.fm.related).some((r) => r === onlyMega || r.startsWith(`${onlyMega}-`)))
   .sort((a, b) => (a.fm.date < b.fm.date ? 1 : -1))
 console.log(`## Novedades (últimos ${windowDays} días)`)

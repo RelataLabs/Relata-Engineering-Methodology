@@ -11,7 +11,7 @@
 # - En push a la rama principal, si rem.config.json dice generated.index = "ci": regenera el
 #   índice y las tablas de planes y los commitea. Es el ÚNICO escritor de esas vistas, así
 #   que cinco personas empujando a la vez no chocan en el README (docs/TEAM.md).
-# - Cada lunes: doctor, y si falla abre (o comenta) un issue con la etiqueta `rem-doctor`.
+# - Cada lunes: doctor --strict; errores y avisos abren/comentan un issue `rem-doctor`.
 
 name: REM
 
@@ -44,10 +44,11 @@ jobs:
         id: doctor
         run: |
           set +e
-          node scripts/rem-doctor.mjs --no-git --adoption > doctor.txt 2>&1
+          strict=""
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then strict="--strict"; fi
+          node scripts/rem-doctor.mjs --no-git --adoption $strict > doctor.txt 2>&1
           code=$?
           cat doctor.txt
-          { echo 'report<<REPORT'; cat doctor.txt; echo 'REPORT'; } >> "$GITHUB_OUTPUT"
           exit $code
 
       - name: Regenerar vistas (escritor único)
@@ -70,10 +71,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const report = require('node:fs').readFileSync('doctor.txt', 'utf8')
             const title = 'rem-doctor: hallazgos en el hub'
             const body = [
               'El chequeo semanal encontró documentación desactualizada o inconsistente.',
-              '', '```', `${{ steps.doctor.outputs.report }}`, '```', '',
+              '', '```', report, '```', '',
               'Reproducir en local, con los repos de código clonados (añade las reglas de commits):',
               '`node scripts/rem-doctor.mjs`',
             ].join('\n')

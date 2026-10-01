@@ -20,8 +20,8 @@ página existe para que eso no vuelva a pasar.
 | **Spokes** (solo hub) | con spokes: cada repo de código lleva `CHANGELOG.md`, hook `commit-msg` y un bloque en su archivo de agentes que apunta al hub · sin spokes: los repos no saben del hub | con spokes. Sin spokes es una **excepción declarada** en la Constitución, y el timeline sale de los commits |
 | **Política de changelog** | `required` (cada cambio de código, mismo commit, lo exige el hook) · `observable` (solo lo observable) · `deferred` (aún no; excepción declarada) | `required` |
 | **Atribución de IA en commits** | bloqueada por el hook · permitida | la que diga el proyecto; va en la Constitución |
-| **WIP** | Plans activos por persona | 1 |
-| **Vistas generadas** | `ci` (solo CI regenera índice y tablas; para equipos) · `local` (el hook pre-commit; para una persona) | `ci` si escribe más de una persona |
+| **Atención activa** | Plans Activo/Verificando por persona; WIP total se registra aparte | 1 |
+| **Vistas generadas** | `ci` (solo CI regenera índice y tablas; para equipos) · `local` (el responsable ejecuta rem-index y prepara las vistas; el hook comprueba el índice staged) | `ci` si escribe más de una persona |
 
 Un agente **no** toma estas decisiones solo: son autoridad humana (METHOD §3).
 
@@ -85,7 +85,7 @@ preguntar.
 | `changelog.policy` | `required` · `observable` · `deferred` |
 | `timeline.source` | `auto` (changelog si existe, si no commits) · `changelog` · `git` |
 | `generated.index`, `generated.timeline` | quién regenera las vistas: `ci` o `local` |
-| `wip.maxActiveOrVerifyingPerOwner` | límite de WIP |
+| `wip.maxActiveOrVerifyingPerOwner` | límite de atención activa, separado del WIP total |
 | `team.owners` | handles válidos para `owner` (vacío = sin validar) |
 | `limits` | umbrales de las reglas (DEC, estancamiento, despliegue, arquitectura) |
 | `agentBlock` | fichero y encabezado del bloque de agente que se compara entre repos |
@@ -154,6 +154,16 @@ git add -A && git commit              # el hook commit-msg ya revisa este commit
 git push                              # y el CI corre con el reloj a partir de aquí
 ```
 
+El pre-commit comprueba una copia temporal del contenido preparado para commit y exige
+`rem.config.json` en ese contenido. Usa las herramientas instaladas, sin ejecutar las de
+la copia ni añadir cambios al índice. Los documentos del hub deben estar dentro de su
+raíz; las referencias a repos externos conservan su contexto, pero no incorporan esos
+repos al commit. La implementación rechaza enlaces simbólicos versionados, no materializa
+el contenido de submódulos y limita la lectura conjunta de blobs a 256 MiB. Si encuentra
+uno de esos límites, falla explícitamente: no certifica una inspección parcial. En ese
+caso se debe revisar la topología o ampliar el tooling y su verificación antes de usar
+este control en ese repositorio.
+
 ## 8. Definición de hecho
 
 La adopción está hecha cuando:
@@ -194,13 +204,13 @@ La adopción está hecha cuando:
 | 15 | IDs duplicados | error |
 | 16 | Enlaces relativos rotos | error |
 | 17 | Plan activo con `owner` (y en `team.owners` si se declara) | error / aviso |
-| 18 | WIP por persona | error |
+| 18 | Límite de atención activa por persona | error |
 | 19 | Zonas de cambio (`touches`) que se pisan entre planes activos de personas distintas | aviso |
 | 20 | Plan que se entrega con dependencias sin entregar | aviso |
 | 21 | Secretos en el hub | error |
 | 22 | `verification_level` válido; presente en planes activos | error / aviso |
 | 23 | ARCH sin verificar en `archStaleDays` | aviso |
-| 24 | Fechas de flujo (`started`, `closed`) | aviso |
+| 24 | Fechas de flujo válidas, ordenadas y no futuras; pausa con fecha y motivo | error; `started`/`closed` ausentes generan aviso y bloquean el cálculo de métricas |
 | 25 | Tabla de planes del maestro generada; si no, deriva fila a fila | aviso |
 
 ## 10. Desde REM 1.0

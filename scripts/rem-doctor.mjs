@@ -32,13 +32,16 @@ import {
   INDEX_START,
   PLANS_START,
   asList,
+  arg,
   branchRef,
   daysSince,
   fileMatchesId,
   flag,
   git,
+  isWithin,
   loadConfig,
   loadDocs,
+  parseDate,
   readText,
   repoBranch,
   repoDir,
@@ -47,8 +50,10 @@ import {
   typeEntries,
   walkText,
 } from './lib/rem.mjs'
+import { planDateIssues } from './lib/flow.mjs'
 
 const ROOT = resolveRoot(import.meta.url)
+const SOURCE_ROOT = arg('--source-root')
 const NO_GIT = flag('--no-git')
 const QUIET = flag('--quiet')
 const STRICT = flag('--strict')
@@ -172,8 +177,8 @@ for (const d of docs) {
     add(1, 'error', `${d.rel}: el nombre del fichero no corresponde al id \`${d.fm.id}\``,
       t.fileNaming === 'unprefixed-id' ? 'el fichero es el id sin su prefijo: YYYY-MM-DD-slug.md' : 'el fichero empieza por el id: <ID>-slug.md')
   }
-  if (d.fm.date && !/^\d{4}-\d{2}-\d{2}$/.test(d.fm.date)) {
-    add(1, 'error', `${label(d)}: date \`${d.fm.date}\` no es YYYY-MM-DD`)
+  if (d.fm.date && !parseDate(d.fm.date)) {
+    add(1, 'error', `${label(d)}: date \`${d.fm.date}\` no es una fecha de calendario YYYY-MM-DD válida`)
   }
 }
 
@@ -295,6 +300,28 @@ for (const d of withId) {
   }
 }
 
+// Los IDs pueden existir y aun así formar un ciclo imposible de secuenciar.
+{
+  const visited = new Set()
+  const visiting = new Set()
+  const path = []
+  const visit = (id) => {
+    if (visiting.has(id)) {
+      add('6b', 'error', `ciclo de dependencias: ${[...path.slice(path.indexOf(id)), id].join(' → ')}`,
+        'divide el contrato o elimina la dependencia que no sea necesaria; registra la decisión')
+      return
+    }
+    if (visited.has(id) || !byId.has(id)) return
+    visiting.add(id)
+    path.push(id)
+    for (const dep of asList(byId.get(id).fm.depends_on)) visit(dep)
+    path.pop()
+    visiting.delete(id)
+    visited.add(id)
+  }
+  for (const d of withId) visit(d.fm.id)
+}
+
 // --- 7. Notas DEC que se pasan de tamaño -------------------------------------
 for (const d of withId.filter((x) => typeOf(x) === 'dec')) {
   const content = d.body.replace(/<!--[\s\S]*?-->/g, '').split(/\r?\n/).filter((l) => l.trim()).length
@@ -370,9 +397,10 @@ for (const d of withId) {
 }
 
 // --- 12. Integridad Megaplán ↔ Plan, en las dos direcciones -------------------
-const megaPlanId = /^(MEGA-\d{4}-\d{3})-P\d+$/
+const megaPattern = config.types.mega?.idPattern ? new RegExp(config.types.mega.idPattern) : /^MEGA-\d{4}-\d{3}$/
 for (const d of plans) {
-  const parentFromId = megaPlanId.exec(d.fm.id)?.[1]
+  const candidate = /^(.+)-P\d+$/.exec(d.fm.id)?.[1]
+  const parentFromId = candidate && megaPattern.test(candidate) ? candidate : null
   if (!d.fm.megaplan) {
     if (parentFromId) {
       add(12, 'error', `${d.fm.id}: sin \`megaplan\`, pero su id dice que es de ${parentFromId}`, `declara megaplan: ${parentFromId}`)
@@ -382,13 +410,15 @@ for (const d of plans) {
     continue
   }
   if (!config.legacy && !parentFromId) {
-    add(12, 'error', `${d.fm.id}: un Plan suelto (PLAN-…) no declara megaplan; uno de megaplán se llama MEGA-…-PN`)
+    add(12, 'error', `${d.fm.id}: el Plan de megaplán debe usar <id-del-megaplán>-PN según el patrón configurado`)
   } else if (parentFromId && parentFromId !== d.fm.megaplan) {
     add(12, 'error', `${d.fm.id}: su id dice ${parentFromId} pero declara megaplan ${d.fm.megaplan}`)
   }
   const parent = byId.get(d.fm.megaplan)
   if (!parent) {
     add(12, 'error', `${d.fm.id}: su megaplan \`${d.fm.megaplan}\` no existe`)
+  } else if (typeOf(parent) !== 'mega') {
+    add(12, 'error', `${d.fm.id}: ${parent.fm.id} no es de tipo mega`)
   } else if (!plansOf(parent).includes(d.fm.id)) {
     add(12, 'error', `${d.fm.id}: ${parent.fm.id} no lo lista en \`plans\``, `añade ${d.fm.id} a plans de ${parent.fm.id}`)
   }
@@ -397,6 +427,7 @@ for (const d of megas) {
   for (const pid of plansOf(d)) {
     const p = byId.get(pid)
     if (!p) add(12, 'error', `${d.fm.id}: lista el plan \`${pid}\`, que no existe`)
+    else if (typeOf(p) !== 'plan') add(12, 'error', `${d.fm.id}: ${pid} no es de tipo plan`)
     else if (p.fm.megaplan !== d.fm.id) add(12, 'error', `${d.fm.id} ↔ ${pid}: el plan no declara megaplan ${d.fm.id}`)
   }
 }
@@ -441,7 +472,13 @@ for (const path of walkText(ROOT, config.links.exclude, ['.md'])) {
     if (/^(https?:|mailto:|#|\/\/|data:)/i.test(target)) continue
     let clean = target.split('#')[0]
     try { clean = decodeURI(clean) } catch { /* se prueba tal cual */ }
-    if (clean && !existsSync(resolve(dirname(path), clean))) add(16, 'error', `${rel}: enlace roto a \`${target}\``)
+    if (!clean) continue
+    let destination = resolve(dirname(path), clean)
+    if (SOURCE_ROOT) {
+      const original = resolve(dirname(resolve(SOURCE_ROOT, rel)), clean)
+      destination = isWithin(SOURCE_ROOT, original) ? resolve(ROOT, relative(SOURCE_ROOT, original)) : original
+    }
+    if (!existsSync(destination)) add(16, 'error', `${rel}: enlace roto a \`${target}\``)
   }
 }
 
@@ -506,8 +543,8 @@ for (const d of plans) {
   for (const dep of asList(d.fm.depends_on)) {
     const p = byId.get(dep)
     if (p && !DEPENDENCY_DONE.has(p.fm.status)) {
-      add(20, 'warn', `${d.fm.id} está \`${d.fm.status}\` pero depende de ${dep} (\`${p.fm.status}\`)`,
-        'o la dependencia ya no lo es (quítala y di por qué), o este plan no está donde dice')
+      add(20, p.fm.status === 'Abandonado' ? 'error' : 'warn', `${d.fm.id} está \`${d.fm.status}\` pero depende de ${dep} (\`${p.fm.status}\`)`,
+        'una dependencia abandonada no entrega su contrato; sustituye o quita la dependencia con una decisión, o corrige el estado')
     }
   }
 }
@@ -588,10 +625,7 @@ for (const d of withId.filter((x) => typeOf(x) === 'arch' && x.fm.status !== 'Ob
 
 // --- 24. Fechas de flujo (métricas mínimas del kernel) -----------------------------
 for (const d of plans) {
-  if (d.fm.status !== 'Pendiente' && !d.fm.started) {
-    add(24, 'warn', `${d.fm.id}: \`${d.fm.status}\` sin \`started\``, 'sin fecha de inicio no hay edad ni cycle time (METHOD §14)')
-  }
-  if (FINAL_STATES.has(d.fm.status) && !d.fm.closed) add(24, 'warn', `${d.fm.id}: \`${d.fm.status}\` sin \`closed\``)
+  for (const issue of planDateIssues(d.fm)) add(24, issue.level, `${d.fm.id}: ${issue.message}`, 'METHOD §7.3 y §14: registra fechas reales y el motivo de pausa')
 }
 
 // --- 25. La tabla de planes del maestro es generada --------------------------------

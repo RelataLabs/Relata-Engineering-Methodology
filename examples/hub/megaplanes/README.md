@@ -162,10 +162,10 @@ MEGA-…-P8": mover trabajo entre planes es explícito, nunca silencioso.
 | 13 | Un plan `Cerrado` no tiene casillas sin marcar |
 | 14 | Un megaplán `Cerrado` tiene todos sus planes `Cerrado` o `Abandonado` |
 | 17 | Un plan `Activo` o `Verificando` tiene `owner` |
-| 18 | Nadie supera el límite de WIP de la Constitución |
+| 18 | Nadie supera el límite de atención activa de la Constitución; el WIP total se informa aparte |
 | 19 | Dos planes activos de dos personas no declaran la misma zona en `touches` (aviso) |
 | 20 | Un plan que ya se entrega no depende de uno que no ha entregado (aviso) |
-| 24 | Un plan que ya empezó tiene `started`; uno terminado, `closed` (aviso) |
+| 24 | Fechas reales y ordenadas; pausa con `paused` y `pause_reason` (error). `started`/`closed` ausentes avisan y bloquean métricas |
 | 25 | La tabla del maestro está entre marcadores; si no, se compara fila a fila (aviso) |
 
 La 13 es la que sostiene el formato: dar por cerrado algo con trabajo dentro es la deriva que
@@ -197,6 +197,6 @@ al llegar quedan casillas, el estado honesto es `Pausado` o `Abandonado`, y la r
 impone de todas formas. Conviene lanzar una revisión adversarial justo antes de cerrar: en el
 hub de origen de REM una revisión así tumbó dos cierres el mismo día, y la bitácora lo cuenta.
 
-Un megaplán se cierra cuando todos sus planes están `Cerrado` o `Abandonado`. Lo aprendido no
+Un megaplán se cierra cuando cumple su propio criterio y todos sus planes están `Cerrado` o `Abandonado`. Un abandono no satisface dependencias ni un entregable obligatorio: cualquier modificación de alcance se decide y registra antes de cerrar. Lo aprendido no
 se queda aquí: si estableció una regla, se escribe una DEC; si fue una entrega grande, un IMP.
 **El megaplán describe el viaje; no es el destino.**

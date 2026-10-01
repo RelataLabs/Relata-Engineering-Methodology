@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased — 2026-10-01
+
+### Aclarado
+
+- La prohibición de ocultar o falsificar evidencia es incondicional; la aceptación de riesgo no permite aparentar un cierre.
+- WIP total y atención activa tienen definiciones separadas; pausas, observación y abandonos conservan trazabilidad y fechas de flujo reales.
+- Los mínimos de V2/V3 prevalecen sobre recomendaciones generales; la Constitución concreta o amplía su ejecución sin relajarlos para cerrar.
+- La observación interna de 99/117 cambios se contextualiza sin presentarla como estudio reproducible ni conclusión causal.
+- Se corrigen referencias residuales a 1.0 en recomendaciones vigentes y atribución, conservando las menciones históricas.
+
+### Añadido
+
+- Guía de alcance y evaluación: distingue definición, tooling, adopción, producto y eficacia; propone medir flujo, coste y retrabajo con límites explícitos.
+- Recorrido didáctico completo con datos sintéticos, verificación contrafactual, recuperación, observación y cálculo de métricas.
+- Fuentes primarias más precisas para Spec Kit, Kanban, Shape Up y registros de decisión.
+
+### Corregido
+
+- Las comprobaciones previas al commit revisan el árbol preparado sin incorporar archivos ni cambios ajenos; las vistas locales se generan y preparan explícitamente.
+- Las dependencias abandonadas no se consideran entregas satisfechas; se detectan ciclos y se respetan los patrones configurados de identificadores.
+- Las métricas separan WIP total, atención, cierres y abandonos; fechas inválidas no producen resultados parciales y la mediana usa ambos valores centrales cuando corresponde.
+- El control semanal utiliza validación estricta y los informes de CI se leen como datos, sin interpolarlos en código.
+
+Estos cambios pertenecen a una revisión de REM 1.1 pendiente de publicación como versión; no crean una release ni una etiqueta nueva.
+
 ## 1.1.0 — 2026-09-25
 
 REM 1.1 recupera la capa operativa que se perdió al destilar REM del hub de su proyecto de

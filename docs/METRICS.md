@@ -4,23 +4,21 @@ REM mide flujo y resultados, no actividad.
 
 ## Mínimas
 
-### WIP
+### WIP total y atención activa
 
 Cantidad de trabajo iniciado y no terminado.
 
-Para Plans:
-
-`Activo + Verificando + (Desplegado/Observando que aún requieren atención)`
+Para Plans: todos los que tienen `started` válido y no están `Cerrado` ni `Abandonado`. Incluye pausas y espera de observación. La atención activa (`Activo + Verificando`) se informa aparte y usa el límite configurable por responsable. La falta de atención inmediata no convierte un trabajo pendiente en terminado.
 
 ### Throughput
 
-Planes/unidades cerradas por periodo.
+Planes en `Cerrado` por período. Los abandonos se cuentan por separado: son salidas del flujo, no entregas cumplidas. `rem-flow --days N` informa las N fechas calendario UTC que incluyen hoy; una fecha de cierre exactamente N días atrás queda fuera. El período y su zona se muestran para evitar comparaciones entre ventanas distintas.
 
 No comparar equipos por throughput sin contexto: las unidades no son homogéneas.
 
 ### Work Item Age
 
-Edad de cada trabajo que sigue abierto desde `started`.
+Edad de cada trabajo iniciado que sigue abierto desde `started`, incluidos los pausados. Usa días calendario; no resta bloqueos ni reinicia al reanudar.
 
 Sirve para detectar envejecimiento antes de que se convierta en retraso invisible.
 
@@ -28,7 +26,9 @@ Sirve para detectar envejecimiento antes de que se convierta en retraso invisibl
 
 `closed - started`
 
-Usa percentiles/mediana, no solo promedio.
+Para planes `Cerrado`, usa días calendario entre fechas reales. La mediana de una cantidad par de valores es el promedio de los dos centrales. `rem-flow` presenta el histórico de cierres con fechas válidas; su ventana de throughput no filtra ese histórico. La duración hasta abandono se analiza aparte. Usa percentiles/mediana y cantidad de observaciones, no solo promedio.
+
+Los campos `date`, `started`, `paused` y `closed` deben contener fechas de calendario válidas. `started`, `paused` y `closed` no pueden ser futuras ni estar invertidas. Fechas objetivo futuras son planificación y van en campos separados. Si faltan fechas de flujo exigibles, primero se corrigen con evidencia; el comando rechaza el cálculo en lugar de excluir silenciosamente registros. No se reconstruyen fechas desconocidas para mejorar los indicadores.
 
 ## Recomendadas
 
@@ -72,3 +72,5 @@ Siempre que el objetivo lo permita, adjunta una señal de resultado:
 - coste.
 
 No todos los cambios necesitan una KPI de negocio. Sí necesitan una definición honesta de qué significaría que el problema quedó resuelto.
+
+Para evaluar sobrecoste, retrabajo, factores de contexto y límites de atribución, véase [EVALUATION.md](EVALUATION.md). Los indicadores del producto no prueban por sí solos la eficacia de REM.

@@ -2,6 +2,8 @@
 
 El nivel se elige por impacto y frontera de confianza, no por tamaño del diff.
 
+Los mínimos de esta guía prevalecen sobre recomendaciones generales. La Constitución concreta su ejecución y puede ampliarlos o exigirlos en niveles inferiores, pero no omitirlos en V2/V3 para obtener un cierre. Una técnica equivalente debe comprobar el mismo fallo temido y dejar evidencia revisable. Si cambia materialmente el alcance o el riesgo, se registra la reclasificación y se conservan las comprobaciones anteriores.
+
 ## V0 — Mecánico
 
 Ejemplos:
@@ -96,7 +98,7 @@ Evidencia mínima:
 
 Ocultarlo no lo es.
 
-Una casilla `[VER]` puede cerrarse con resultado “no fue posible demostrar X en producción; queda sostenido por Y”, siempre que el criterio de cierre y nivel de riesgo permitan esa evidencia.
+Una casilla `[VER]` puede cerrarse con resultado “no fue posible demostrar X en producción; queda sostenido por Y”, siempre que Y satisfaga el criterio y todos los mínimos aplicables. Si falta un mínimo, la verificación permanece pendiente o el trabajo se pausa. Aceptar riesgo residual no autoriza a ocultar un fallo ni a declarar satisfecho un requisito que no se comprobó. En V3 la observación exigida en el entorno objetivo no se sustituye por una declaración de imposibilidad.
 
 ## La prueba debe probar el efecto
 
