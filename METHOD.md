@@ -149,6 +149,8 @@ REM NO exige estimaciones de horas ni story points.
 
 Un equipo PUEDE usar un **appetite** o presupuesto de atención para limitar inversión, siempre que no lo confunda con una predicción contractual de duración.
 
+No exigir estimaciones de horas ni story points no impide presupuestar recursos. El presupuesto de atención, los desembolsos monetarios y los aportes de terceros son perspectivas distintas. Una adopción PUEDE concretar en su Constitución la política de contratación, límites, seguimiento y continuidad que corresponda; [COSTS.md](docs/COSTS.md) ofrece orientación sin añadir requisitos al kernel.
+
 ---
 
 ## 5. Clases de trabajo y coste documental

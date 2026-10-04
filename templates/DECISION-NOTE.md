@@ -30,7 +30,7 @@ Los párrafos son un menú: borra los que no apliquen.
 **La regla, explícita.** Lo que ahora queda escrito y antes solo vivía en un diff. Si algo del
 sistema ya era correcto, dilo: evita que alguien lo "arregle".
 
-**Decisión.** Qué se hace, en qué rutas de código, y qué sigue prohibido.
+**Decisión.** Qué se hace, en qué rutas de código, y qué sigue prohibido. Si afecta recursos o compromisos económicos, enlaza el registro común y la autoridad aplicable; una propuesta no acredita contratación.
 
 **Fuera de alcance.** Qué NO se tocó, para que nadie lo asuma incluido.
 

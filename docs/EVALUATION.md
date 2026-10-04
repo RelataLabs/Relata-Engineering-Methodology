@@ -46,3 +46,7 @@ Un descenso de cycle time puede deberse a cambios más pequeños, experiencia de
 El informe de evaluación debe incluir: pregunta, contexto, versión, política aplicada, unidad y período, selección de casos, fuentes, resultados completos, limitaciones y decisión posterior. Distingue instalación, ejecución del método y resultados del producto. Si el autor de REM también evalúa, decláralo; si hubo revisión externa, indica qué examinó y conserva su registro.
 
 El [recorrido completo](EXAMPLE-WALKTHROUGH.md) es un ejemplo didáctico con datos sintéticos. Enseña a registrar y calcular; no constituye un caso de validación de REM.
+
+## Costes monetarios y esfuerzo
+
+El sobrecoste de coordinación se mide como trabajo observado; el gasto de infraestructura o servicios usa importes monetarios, moneda y período. Informarlos por separado permite explicar financiación y aportes de terceros sin convertir ausencia de desembolso en ausencia de esfuerzo. La [guía de costes](COSTS.md) propone un registro configurable. Presupuestar recursos o contratar una alternativa más barata no demuestra por sí solo una mejora causada por el método.

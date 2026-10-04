@@ -54,6 +54,8 @@ Las secciones son un menú: borra las que no apliquen, salvo Opciones y Decisió
 - **Negativas / costes:** …
 - **Riesgo residual:** … (quién lo aceptó)
 
+> Si la decisión cambia recursos o compromisos económicos, identifica costes iniciales y recurrentes, período y esfuerzo/aportes por separado. Enlaza el registro común y la autoridad prevista en la Constitución; una estimación no acredita contratación.
+
 ## Alternativas descartadas
 
 - **<opción>:** por qué no.
@@ -64,4 +66,4 @@ Las secciones son un menú: borra las que no apliquen, salvo Opciones y Decisió
 
 ## Seguimiento
 
-> Qué vigilar, qué deuda queda, y qué señal haría revisar esta decisión.
+> Qué vigilar, qué deuda queda, y qué señal haría revisar esta decisión. Cuando haya compromisos económicos, incluye cambios de precio, consumo, financiación o renovación que requieran revisarla.

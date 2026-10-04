@@ -84,6 +84,10 @@ Las secciones son un menú: borra las que no apliquen.
 
 - [ ] <acción> — <quién>
 
+## Recursos y continuidad
+
+> Cuando corresponda, enlaza el registro económico común y sus responsables de financiación y renovación. Los planes afectados referencian ese registro sin sumar dos veces recursos compartidos.
+
 ## Fuera de alcance
 
 > Qué NO entra, para que nadie lo dé por incluido.
