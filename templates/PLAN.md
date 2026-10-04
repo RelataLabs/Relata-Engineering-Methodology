@@ -101,6 +101,10 @@ que no se borra. El menú aplica a secciones de un documento, nunca a tipos ni c
 - **Produce:** <endpoint, evento, tabla, componente, documento — con su forma>
 - **Consume:** <lo que espera de otro plan, y de cuál>
 
+## Recursos y compromisos económicos
+
+> Cuando este Plan afecte un compromiso económico, enlaza el registro común y precisa el impacto, período y autoridad aplicable. Evita duplicar partidas. Esta sección es opcional según el contexto y la Constitución.
+
 ## Checklist
 
 > Hitos tipados: casi siempre hay que averiguar algo antes de poder decidir, y decidir

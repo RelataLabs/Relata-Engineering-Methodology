@@ -74,3 +74,5 @@ Siempre que el objetivo lo permita, adjunta una señal de resultado:
 No todos los cambios necesitan una KPI de negocio. Sí necesitan una definición honesta de qué significaría que el problema quedó resuelto.
 
 Para evaluar sobrecoste, retrabajo, factores de contexto y límites de atribución, véase [EVALUATION.md](EVALUATION.md). Los indicadores del producto no prueban por sí solos la eficacia de REM.
+
+La señal de coste monetario identifica moneda, período y fuente, separando previsión, compromiso y gasto real del esfuerzo observado. Véase [COSTS.md](COSTS.md); su registro es una política local cuando corresponde y no amplía las cuatro métricas mínimas de flujo.

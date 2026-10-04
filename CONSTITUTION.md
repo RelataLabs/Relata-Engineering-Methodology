@@ -101,3 +101,14 @@ Toda regla de REM o de esta Constitución que no se cumple todavía.
 | | | | |
 
 ## 11. Preguntas abiertas
+
+## 12. Recursos y compromisos económicos — cuando corresponda
+
+Orientación en [COSTS.md](docs/COSTS.md). Esta sección puede omitirse si el proyecto no tiene compromisos económicos que gestionar.
+
+- registro común de recursos, precios y fuentes, moneda, periodicidad y período;
+- desembolso previsto, comprometido y real; aportes de terceros separados;
+- responsable de financiación y de continuidad/renovación;
+- importe, período y consumo autorizados; quién decide sus cambios;
+- cadencia de seguimiento y criterio para atribuir recursos compartidos;
+- planes afectados que enlazan el registro, evitando duplicar partidas.

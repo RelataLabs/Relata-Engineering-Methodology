@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 2026-10-01
+## Unreleased — 2026-10-04
 
 ### Aclarado
 
@@ -12,6 +12,7 @@
 
 ### Añadido
 
+- Guía configurable de recursos, costes y continuidad: distingue dinero, esfuerzo y aportes; enlaza presupuestos comunes desde decisiones y planes sin añadir obligaciones al kernel.
 - Guía de alcance y evaluación: distingue definición, tooling, adopción, producto y eficacia; propone medir flujo, coste y retrabajo con límites explícitos.
 - Recorrido didáctico completo con datos sintéticos, verificación contrafactual, recuperación, observación y cálculo de métricas.
 - Fuentes primarias más precisas para Spec Kit, Kanban, Shape Up y registros de decisión.

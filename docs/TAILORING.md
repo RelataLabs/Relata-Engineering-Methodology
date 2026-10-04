@@ -99,3 +99,7 @@ Añade:
 - evidencia firmada si aplica.
 
 No hace falta abandonar REM: se incrementa el coste donde el riesgo lo justifica.
+
+## Recursos y política económica
+
+Un proyecto con compromisos económicos puede concretar en su Constitución el registro común, límites de importe/período/consumo, autoridad de contratación y renovación, cadencia de seguimiento y continuidad. La [guía de costes](COSTS.md) es orientación: no exige estimar horas, crear un tipo documental adicional ni presupuestar cada Plan. Las reglas de autoridad y evidencia existentes siguen vigentes.

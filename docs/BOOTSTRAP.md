@@ -221,3 +221,5 @@ La adopción está hecha cuando:
 - `plans`/`planes`: se aceptan las dos claves.
 - La tabla de planes del maestro: ponla entre los marcadores `REM:PLANES` y regenera.
 - Plan suelto: ahora es legítimo como `PLAN-YYYY-NNN` con `megaplan: null`.
+
+Cuando el proyecto tenga recursos o servicios facturables, puede configurar la política económica y enlazar su registro común siguiendo [COSTS.md](COSTS.md). Es una decisión local de adopción, sin requisitos adicionales del doctor ni cambios al kernel.

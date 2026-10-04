@@ -56,6 +56,10 @@ CERRAR / APRENDER
 9. **Se mide flujo y resultados, no story points ni volumen de código.**
 10. **El método también se inspecciona y evoluciona.**
 
+## Recursos y costes
+
+La [guía de costes y continuidad](docs/COSTS.md) ayuda a proyectos con infraestructura, dominios, suscripciones o consumo facturable. Distingue dinero, esfuerzo y aportes de terceros; cada adopción configura su política económica según los compromisos existentes. No exige un presupuesto por cada Plan ni cambia el kernel de REM 1.1.
+
 ## Qué NO exige REM
 
 REM no exige:
