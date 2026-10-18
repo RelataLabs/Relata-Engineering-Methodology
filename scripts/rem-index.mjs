@@ -9,15 +9,13 @@
  *   1. el índice del README, entre los marcadores REM:INDEX;
  *   2. la tabla de planes de cada Megaplán, entre los marcadores REM:PLANES.
  *
- * Mantenidas a mano, las dos se desincronizan: en el hub de origen de REM un incidente
- * pasó 25 días anunciado como abierto con la corrección desplegada, y la tabla de un
- * megaplán decía "Pendiente" de un plan que ya estaba `Activo`. Con una sola fuente
- * (el front-matter de cada documento) no puede volver a pasar.
+ * El front-matter de cada documento es la fuente de estas vistas. Generarlas permite
+ * mantener sus estados alineados con esa fuente; --check detecta vistas desactualizadas.
  *
  * En equipo, estas vistas tienen UN solo escritor (config `generated.index`):
  *   - `ci`: solo CI las regenera en la rama principal; nadie las commitea a mano, así
  *     que no hay conflictos cuando cinco personas empujan a la vez;
- *   - `local`: el autor regenera y prepara las vistas; pre-commit comprueba el índice
+ *   - `local`: el responsable del cambio regenera y prepara las vistas; pre-commit comprueba el índice
  *     sin modificarlo (equipos de una persona).
  *
  * Uso:  node scripts/rem-index.mjs            regenera

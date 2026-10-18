@@ -121,8 +121,8 @@ siempre es el front-matter de cada documento; `rem-status` lo lee directamente.
   ```
 
 - `node scripts/rem-status.mjs --commits` lista los commits de cada plan leyendo ese trailer en
-  la rama de integración de cada repo. Nadie tiene que editar un fichero compartido para decir
-  "este commit es mío".
+  la rama de integración de cada repo. El vínculo entre commit y plan queda registrado sin
+  editar un fichero compartido.
 - `commits: [repo@hash]` del plan se rellena después del merge, por su responsable.
 
 ## 9. Traspaso

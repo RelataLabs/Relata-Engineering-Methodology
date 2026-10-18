@@ -13,13 +13,13 @@ REM 1.1 es una propuesta de proceso publicada como especificación. Sus reglas p
 | Un producto cumple requisitos | Pruebas y observaciones ligadas a criterios del producto | Se sustentan esos requisitos; el número de pruebas no mide eficacia del método. |
 | El proceso resulta útil | Datos de flujo, resultados, retrabajo y coste de coordinación, con contexto y comparación | Se describe utilidad observada; atribuir causalidad requiere un diseño que descarte explicaciones alternativas. |
 
-El nombre del método, su publicación, sus licencias y el estado de una versión no constituyen una certificación de eficacia. Las fuentes propias permiten consultar la propuesta; una evaluación independiente requiere participantes y revisión que realmente lo sean. El autor puede evaluar su aplicación, declarando esa relación y los límites de la observación.
+El nombre del método, su publicación, sus licencias y el estado de una versión no constituyen una certificación de eficacia. Las fuentes propias permiten consultar la propuesta; una evaluación independiente requiere participantes y revisión que realmente lo sean. El equipo de RelataLabs puede evaluar su aplicación, declarando esa relación y los límites de la observación.
 
 ## Fundamentos y aportación
 
 [REFERENCES.md](../REFERENCES.md) identifica prácticas y fuentes primarias: especificación antes de implementación, control del flujo, decisiones durables y verificación. REM las organiza mediante responsabilidades entre personas, agentes y automatización, y reglas configurables de coordinación y cierre. No atribuye originalidad a cada práctica ni adopta automáticamente todas las reglas de las propuestas citadas.
 
-Los antecedentes del proyecto de origen son experiencias declaradas, no estudios independientes. Por ejemplo, el recuento 99/117 mencionado en METHOD §11.2 no viene acompañado de su conjunto de datos y protocolo; sirve para explicar una decisión de diseño, no para estimar una tasa general o probar causalidad.
+Las experiencias de RelataLabs con sus productos forman parte de los antecedentes de REM; se presentan como observaciones internas, no como estudios independientes. Las prácticas surgidas de ese contexto pueden requerir ajustes en equipos con otras herramientas, culturas o tipos de proyecto. Por ejemplo, el recuento 99/117 mencionado en METHOD §11.2 no viene acompañado de su conjunto de datos y protocolo; sirve para explicar una decisión de diseño, no para estimar una tasa general o probar causalidad.
 
 ## Protocolo práctico para una aplicación
 
@@ -43,7 +43,7 @@ Un descenso de cycle time puede deberse a cambios más pequeños, experiencia de
 
 ## Cómo informar los resultados
 
-El informe de evaluación debe incluir: pregunta, contexto, versión, política aplicada, unidad y período, selección de casos, fuentes, resultados completos, limitaciones y decisión posterior. Distingue instalación, ejecución del método y resultados del producto. Si el autor de REM también evalúa, decláralo; si hubo revisión externa, indica qué examinó y conserva su registro.
+El informe de evaluación debe incluir: pregunta, contexto, versión, política aplicada, unidad y período, selección de casos, fuentes, resultados completos, limitaciones y decisión posterior. Distingue instalación, ejecución del método y resultados del producto. Si RelataLabs participa en la evaluación, declara esa relación; si hubo revisión externa, indica qué examinó y conserva su registro.
 
 El [recorrido completo](EXAMPLE-WALKTHROUGH.md) es un ejemplo didáctico con datos sintéticos. Enseña a registrar y calcular; no constituye un caso de validación de REM.
 

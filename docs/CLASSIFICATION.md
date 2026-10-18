@@ -92,7 +92,7 @@ Cuando haya espacio para mayor precisión:
 
 > **Se utilizará Relata Engineering Methodology (REM) 1.1, un framework configurable de proceso de ingeniería de software publicado como especificación de método. La adopción del proyecto conserva el kernel de REM y configura sus políticas técnicas y de flujo según el contexto del proyecto.**
 
-La clasificación describe la estructura de la propuesta; no certifica su eficacia ni su equivalencia con otros métodos. Una aplicación académica identifica la versión, explica las reglas utilizadas y presenta evidencia de su ejecución. Si quien evalúa también creó el método, declara esa relación y distingue sus fuentes propias de una evaluación independiente. Véanse [alcance y evaluación](EVALUATION.md), [fundamentos](../REFERENCES.md) y el [ejemplo ilustrativo](EXAMPLE-WALKTHROUGH.md).
+La clasificación describe la estructura de la propuesta; no certifica su eficacia ni su equivalencia con otros métodos. Una aplicación académica identifica la versión, explica las reglas utilizadas y presenta evidencia de su ejecución. Si RelataLabs participa en la evaluación, declara esa relación y distingue las fuentes de la organización de una evaluación independiente. Véanse [alcance y evaluación](EVALUATION.md), [fundamentos](../REFERENCES.md) y el [ejemplo ilustrativo](EXAMPLE-WALKTHROUGH.md).
 
 ## 5. Estado de publicación
 

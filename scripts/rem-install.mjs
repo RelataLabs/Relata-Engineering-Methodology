@@ -6,9 +6,8 @@
  * REM install 1.1 — prepara un clon para trabajar en la adopción.
  *
  * Los hooks versionados no se activan solos: `core.hooksPath` es configuración local
- * del clon y no viaja con el repo. En el hub de origen de REM un repo añadido más tarde
- * se quedó sin hook durante semanas porque nadie lo configuró. Esto lo hace en un paso
- * y dice qué más falta.
+ * del clon y no viaja con el repo. Este comando activa los hooks y muestra los pasos
+ * que faltan para completar la configuración.
  *
  * Uso:  node scripts/rem-install.mjs
  */

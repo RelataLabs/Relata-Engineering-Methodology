@@ -41,12 +41,12 @@ cuenta, y ninguna adopción debería hacerlas sin declararlas como excepción en
 - métricas mínimas de flujo;
 - mecanismo de mejora del propio método.
 
-## Traducir las reglas del proyecto de origen
+## Configurar las políticas del proyecto
 
-REM nació destilando el hub de un proyecto concreto. Sus reglas "de la casa" no desaparecieron:
-cambiaron de sitio, de la plantilla o del método a la **Constitución** del proyecto que adopta.
+REM distingue el kernel compartido de las políticas técnicas de cada proyecto. Estas últimas
+se configuran en la **Constitución** de cada adopción. La tabla muestra ejemplos de esa distinción.
 
-| Regla en el proyecto de origen | Dónde vive en REM | Cómo se adapta |
+| Política local de ejemplo | Dónde vive en REM | Cómo se adapta |
 |---|---|---|
 | Clean Architecture y SOLID en todos los repos, sección "no se borra" de cada plan | Constitución, "Arquitectura por repositorio"; cada plan la cita en "Restricciones heredadas" | una fila por repo con SU patrón (Atomic Design, Clean, monolito modular, puertos y adaptadores…) |
 | Boy Scout sin límite | METHOD §9.1 (acotado por familia causal) | se mantiene o se amplía en la Constitución |

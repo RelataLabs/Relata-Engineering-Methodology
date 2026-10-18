@@ -7,7 +7,7 @@
  *
  * Valida un snapshot del índice con el tooling instalado, nunca con scripts del snapshot.
  * No modifica working tree ni staging parcial. Con escritor local comprueba las vistas;
- * el autor las regenera y prepara explícitamente. Con escritor CI, ese trabajo es de CI.
+ * el responsable del cambio las regenera y prepara explícitamente. Con escritor CI, ese trabajo es de CI.
  */
 
 import { spawnSync } from 'node:child_process'

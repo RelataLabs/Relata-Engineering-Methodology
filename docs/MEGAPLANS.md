@@ -14,17 +14,16 @@ Ninguno sirve para «esto es lo que estamos haciendo y por dónde vamos».
 
 ## Por qué existe
 
-En el proyecto donde nació REM, el trabajo pendiente vivía en un directorio suelto, sin
-repositorio y sin validación: media docena de ficheros de estado, planes numerados a mano y
-notas de deuda. Cuando alguien preguntaba cómo íbamos, la respuesta era un volcado en el que
-no se distinguía lo cerrado de lo bloqueado, ni lo que esperaba una decisión de lo que
-esperaba código.
+El trabajo con objetivos dependientes necesita un registro que permita distinguir lo cerrado,
+lo bloqueado y lo pendiente de decisión o implementación. Cuando esa información se mantiene
+en notas dispersas, reconstruir el estado requiere contrastar varios documentos.
 
-El problema no era la falta de información: era la falta de forma. Un megaplán le pone forma
-y —esto es lo que lo distingue de un fichero de notas— **el doctor la comprueba**.
+El megaplán reúne objetivos, dependencias, decisiones pendientes y criterios de cierre.
+El doctor comprueba las invariantes del formato para detectar contradicciones registradas
+en los archivos.
 
-Si tu proyecto tiene hoy carpetas de "planes", "fases", "handoffs" o "auditorías con plan"
-sueltas en un repo de código, ese es exactamente el síntoma. Ver
+Si tu proyecto tiene carpetas de "planes", "fases", "handoffs" o "auditorías con plan"
+dispersas, el procedimiento para clasificarlas y conservar el trabajo vigente está en
 [BOOTSTRAP.md](https://github.com/RelataLabs/Relata-Engineering-Methodology/blob/main/docs/BOOTSTRAP.md#5-migración-brownfield).
 
 ## Cuándo abrir uno
@@ -104,9 +103,9 @@ Qué significa cada paso hacia producción, sin ambigüedad:
 
 La tabla del maestro la escribe `scripts/rem-index.mjs` entre los marcadores `REM:PLANES`,
 desde el front-matter de cada plan (estado, responsable, dependencias). **No se escribe a
-mano.** Escrita a mano, la tabla y el `status` de cada plan son el mismo dato dos veces, y en
-el hub de origen de REM derivaron: la tabla decía `Pendiente` de un plan que llevaba días
-`Activo`. En equipo, además, sería el fichero en el que chocan todos.
+mano.** Mantener la tabla y el `status` por separado duplica el dato y puede producir
+contradicciones: por ejemplo, una tabla que diga `Pendiente` mientras el plan está `Activo`.
+Generarla desde el front-matter evita esa duplicación y reduce las ediciones compartidas.
 
 ## Hitos tipados
 
@@ -194,8 +193,8 @@ generadas de su único escritor. Protocolo completo en [TEAM.md](https://github.
 
 Un plan se cierra cuando cumple su criterio de cierre y todas sus casillas están marcadas. Si
 al llegar quedan casillas, el estado honesto es `Pausado` o `Abandonado`, y la regla 13 lo
-impone de todas formas. Conviene lanzar una revisión adversarial justo antes de cerrar: en el
-hub de origen de REM una revisión así tumbó dos cierres el mismo día, y la bitácora lo cuenta.
+impone de todas formas. Conviene realizar una revisión adversarial antes del cierre para
+contrastar el criterio, las casillas y la evidencia disponible.
 
 Un megaplán se cierra cuando cumple su propio criterio y todos sus planes están `Cerrado` o `Abandonado`. Un abandono no satisface dependencias ni un entregable obligatorio: cualquier modificación de alcance se decide y registra antes de cerrar. Lo aprendido no
 se queda aquí: si estableció una regla, se escribe una DEC; si fue una entrega grande, un IMP.

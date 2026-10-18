@@ -452,7 +452,7 @@ La Constitución DEBE declarar la política de changelog del proyecto: `required
 
 El default de REM es `required`: todo commit que cambia código lleva su entrada de changelog, en lenguaje de usuario y en el mismo commit, y un hook lo comprueba. Los cambios internos van en una sección `Interno`.
 
-La elección se motivó en una observación interna del proyecto de origen: su autor reportó 99 de 117 cambios sin registro documental adicional bajo una política que hacía opcional registrar cambios menores. No se publica aquí el conjunto de cambios, su selección ni un procedimiento de recuento reproducible. La cifra describe ese antecedente declarado; no demuestra causalidad, una tasa generalizable ni superioridad de la política `required`. Cada adopción evalúa su coste y utilidad en su contexto (véase `docs/EVALUATION.md`).
+La elección se motivó en una observación interna del proyecto de origen: RelataLabs reportó 99 de 117 cambios sin registro documental adicional bajo una política que hacía opcional registrar cambios menores. No se publica aquí el conjunto de cambios, su selección ni un procedimiento de recuento reproducible. La cifra describe ese antecedente declarado; no demuestra causalidad, una tasa generalizable ni superioridad de la política `required`. Cada adopción evalúa su coste y utilidad en su contexto (véase `docs/EVALUATION.md`).
 
 `observable` exige entrada solo para cambios observables por usuarios. `deferred` es una excepción declarada (por ejemplo, un hub que todavía no instaló spokes en los repos de código): el registro por defecto pasa a ser el commit y el timeline se construye desde los commits.
 

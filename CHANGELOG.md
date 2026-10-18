@@ -4,6 +4,8 @@
 
 ### Aclarado
 
+- El origen y las observaciones internas de REM se atribuyen a RelataLabs y a la experiencia con sus productos, con sus límites de evaluación explícitos.
+- Las guías de instalación, adaptación y megaplanes explican la función de sus reglas y distinguen las políticas locales del kernel; los ejemplos y comentarios del tooling mantienen esa distinción.
 - La prohibición de ocultar o falsificar evidencia es incondicional; la aceptación de riesgo no permite aparentar un cierre.
 - WIP total y atención activa tienen definiciones separadas; pausas, observación y abandonos conservan trazabilidad y fechas de flujo reales.
 - Los mínimos de V2/V3 prevalecen sobre recomendaciones generales; la Constitución concreta o amplía su ejecución sin relajarlos para cerrar.

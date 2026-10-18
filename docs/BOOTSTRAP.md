@@ -5,12 +5,10 @@
 > `node scripts/rem-doctor.mjs --adoption` salga sin errores. Donde dice "decide un humano",
 > pregunta.
 
-REM se puede adaptar mucho (ver [TAILORING.md](TAILORING.md)), pero una adopción no se hace a
-medias por accidente. La versión 1.0 de REM permitía leer "empieza con poco" como "instala
-poco": la primera adopción en un proyecto multirepo terminó sin megaplanes, sin notas de
-decisión, sin auditorías, sin Constitución, sin tooling y con plantillas reescritas — mientras
-el proyecto tenía decenas de planes y auditorías reales sueltos en un repo de código. Esta
-página existe para que eso no vuelva a pasar.
+REM permite adaptar el uso de sus artefactos al trabajo de cada proyecto (ver
+[TAILORING.md](TAILORING.md)). La instalación proporciona la estructura y los controles
+necesarios para ese uso. Este checklist distingue ambas decisiones y permite comprobar
+que los componentes requeridos están presentes.
 
 ## 0. Decisiones previas — decide un humano
 
@@ -97,8 +95,8 @@ preguntar.
 Obligatorio, en este orden de importancia:
 
 1. **Arquitectura por repositorio** — una fila por repo con su patrón, reglas y desviaciones
-   medidas. Es donde vive lo que el proyecto de origen imponía a todos ("Clean Architecture
-   en todos los repos"): aquí se dice repo por repo. Ejemplos en `examples/`.
+   medidas. Cada repo declara la arquitectura que le corresponde; un patrón común se adopta
+   cuando el proyecto así lo decide. Ejemplos en `examples/`.
 2. **Verificación** — V0–V3 con los comandos reales de cada repo.
 3. **Git y entrega** — ramas, commits, changelog, atribución de IA, reescritura de historia.
 4. **Topología documental** — perfil, spokes o no, dónde queda el registro por defecto.

@@ -74,6 +74,6 @@ En marzo de 2026 OMG publicó Essence 2.0 beta 2.
 
 REM adopta el patrón de Architecture Decision Records: conservar contexto, decisión y consecuencias. La fuente es Michael Nygard (15 de noviembre de 2011), [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions). REM concreta además cómo registrar la evolución de decisiones aceptadas.
 
-## Origen interno
+## Origen en RelataLabs
 
-El Megaplán, Plans tipados `[INV] [DEC] [IMP] [VER]`, ramificaciones, `doctor`, escalamiento documental y distinción entre documentación prospectiva y evidencia histórica provienen de prácticas desarrolladas en el ecosistema RelataSQL y generalizadas aquí como REM. Este es el origen declarado por su autor; el repositorio publica la propuesta resultante, no un estudio independiente ni los datos privados de esos proyectos. El [ejemplo completo](docs/EXAMPLE-WALKTHROUGH.md) es ilustrativo y no sustituye evidencia empírica.
+El Megaplán, Plans tipados `[INV] [DEC] [IMP] [VER]`, ramificaciones, `doctor`, escalamiento documental y distinción entre documentación prospectiva y evidencia histórica provienen de prácticas desarrolladas en el ecosistema de productos de RelataLabs y generalizadas aquí como REM. Este es el origen declarado por RelataLabs; el repositorio publica la propuesta resultante, no un estudio independiente ni los datos privados de esos proyectos. El [ejemplo completo](docs/EXAMPLE-WALKTHROUGH.md) es ilustrativo y no sustituye evidencia empírica.

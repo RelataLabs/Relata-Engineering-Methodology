@@ -1,8 +1,8 @@
 # Ejemplo — Constitución con una sola arquitectura para todo el sistema
 
-> Ejemplo ficticio. Muestra cómo queda en la Constitución un proyecto que impone el mismo
-> patrón a todos sus repos (el caso del proyecto donde nació REM, anonimizado). Las secciones
-> siguen la numeración de `CONSTITUTION.md`.
+> Ejemplo ficticio de una adopción que utiliza un patrón común en todos sus repositorios.
+> Esta es una decisión arquitectónica del proyecto; REM permite otras configuraciones.
+> Las secciones siguen la numeración de `CONSTITUTION.md`.
 
 **Versión:** 1.0 · **Basada en:** REM 1.1 · **Coordinación:** <persona>
 
@@ -17,9 +17,9 @@
 ## 2. Arquitectura por repositorio
 
 Todos los repos siguen **Clean Architecture con SOLID**: dominio sin dependencias, casos de uso
-que dependen de puertos, adaptadores en el borde. **El código heredado no es la referencia**:
-da igual lo mal que esté el fichero que se toca, el código nuevo separa responsabilidades. La
-coherencia vale para nombres, idioma y formato; no para los anti-patrones.
+que dependen de puertos, adaptadores en el borde. El código nuevo sigue el patrón acordado,
+incluso en zonas con desviaciones registradas. Los nombres, el idioma y el formato conservan
+coherencia con el repositorio; las desviaciones arquitectónicas se tratan como deuda.
 
 | Repo | Patrón | Reglas | Desviaciones medidas |
 |---|---|---|---|

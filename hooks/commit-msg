@@ -6,7 +6,8 @@
 # cada repo de código (spoke): se copia a .githooks/commit-msg y se activa por clon con
 #   git config core.hooksPath .githooks      (o node scripts/rem-install.mjs en el hub)
 #
-# Cada regla existe por un fallo medido en el hub de origen de REM, no por gusto:
+# Estos controles abordan problemas de trazabilidad. Antecedentes internos de RelataLabs
+# que motivaron su diseño (véanse los límites de la observación en METHOD §11.2):
 #   1. formato de asunto ....... commits con asunto "." en el propio hub
 #   2. atribución de IA ........ limpiarla después obligó a reescribir historia y dejó
 #                                3 hashes citados sin destino (opcional: Constitución)
